@@ -1,26 +1,39 @@
 package types
 
+import sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 // GenesisState - all grant state that must be provided at genesis
 type GenesisState struct {
-	// TODO: Fill out what is needed by the module for genesis
+	AccessControlList []AccessControlGrant `json:"access_control_list"`
 }
 
-// NewGenesisState creates a new GenesisState object
-func NewGenesisState( /* TODO: Fill out with what is needed for genesis state */) GenesisState {
-	return GenesisState{
-		// TODO: Fill out according to your genesis state
-	}
+// NewGenesisState - Create a new empty access control list
+func NewGenesisState(accessControlList []AccessControlGrant) GenesisState {
+	return GenesisState{AccessControlList: nil}
 }
 
 // DefaultGenesisState - default GenesisState used by Cosmos Hub
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
-		// TODO: Fill out according to your genesis state, these values will be initialized but empty
+		AccessControlList: []AccessControlGrant{},
 	}
 }
 
 // ValidateGenesis validates the grant genesis parameters
 func ValidateGenesis(data GenesisState) error {
-	// TODO: Create a sanity check to make sure the state conforms to the modules needs
+	for _, record := range data.AccessControlList {
+		if record.Processor.Empty() {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "requestor cannot be empty")
+		}
+		if record.Owner.Empty() {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "owner cannot be empty")
+		}
+		if record.Controller.Empty() {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "controller cannot be empty")
+		}
+		if len(record.Datasets) == 0 {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "data sets cannot be empty")
+		}
+	}
 	return nil
 }

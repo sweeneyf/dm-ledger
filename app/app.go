@@ -26,17 +26,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
-	"github.com/cosmos/sdk-tutorials/nameservice/x/nameservice"
 )
 
-const appName = "nameservice"
+const appName = "datamanagement"
 
 var (
 	// DefaultCLIHome default home directories for the application CLI
-	DefaultCLIHome = os.ExpandEnv("$HOME/.nscli")
+	DefaultCLIHome = os.ExpandEnv("$HOME/.damcli")
 
 	// DefaultNodeHome sets the folder where the applcation data and configuration will be stored
-	DefaultNodeHome = os.ExpandEnv("$HOME/.nsd")
+	DefaultNodeHome = os.ExpandEnv("$HOME/.damd")
 
 	// ModuleBasics NewBasicManager is in charge of setting up basic module elements
 	ModuleBasics = module.NewBasicManager(
@@ -103,7 +102,7 @@ type dataManagementApp struct {
 // verify app interface at compile time
 var _ simapp.App = (*dataManagementApp)(nil)
 
-// NewDataManagementApp is a constructor function for nameServiceApp
+// NewDataManagementApp is a constructor function for dataManagementApp
 func NewDataManagementApp(
 	logger log.Logger, db dbm.DB, baseAppOptions ...func(*bam.BaseApp),
 ) *dataManagementApp {
@@ -196,7 +195,7 @@ func NewDataManagementApp(
 			app.slashingKeeper.Hooks()),
 	)
 
-	// The NameserviceKeeper is the Keeper from the module for this tutorial
+	// The grantKeeper is the Keeper from the module for this tutorial
 	// It handles interactions with the namestore
 	app.grantKeeper = grant.NewKeeper(
 		app.cdc,
@@ -227,7 +226,7 @@ func NewDataManagementApp(
 		auth.ModuleName,
 		bank.ModuleName,
 		slashing.ModuleName,
-		nameservice.ModuleName,
+		grant.ModuleName,
 		supply.ModuleName,
 		genutil.ModuleName,
 	)

@@ -15,18 +15,18 @@ import (
 
 // GetQueryCmd -
 func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
-	nameserviceQueryCmd := &cobra.Command{
+	grantQueryCmd := &cobra.Command{
 		Use:                        types.ModuleName,
-		Short:                      "Querying commands for the nameservice module",
+		Short:                      "Querying commands for the grant module",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
-	nameserviceQueryCmd.AddCommand(flags.GetCommands(
+	grantQueryCmd.AddCommand(flags.GetCommands(
 		GetCmdGetGrant(storeKey, cdc),
 	)...)
 
-	return nameserviceQueryCmd
+	return grantQueryCmd
 }
 
 // GetCmdGetGrant queries information about a frant
