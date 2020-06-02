@@ -19,7 +19,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
-	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
@@ -42,8 +41,8 @@ func main() {
 	ctx := server.NewDefaultContext()
 	cobra.EnableCommandSorting = false
 	rootCmd := &cobra.Command{
-		Use:               "appd",
-		Short:             "app Daemon (server)",
+		Use:               "xdmd",
+		Short:             "xdm Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
@@ -74,20 +73,7 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	var cache sdk.MultiStorePersistentCache
-
-	if viper.GetBool(server.FlagInterBlockCache) {
-		cache = store.NewCommitKVStoreCacheManager()
-	}
-
-	return app.NewInitApp(
-		logger, db, traceStore, true, invCheckPeriod,
-		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
-		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
-		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
-		baseapp.SetInterBlockCache(cache),
-	)
+	return app.NewDataManagementApp(logger, db, baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)))
 }
 
 func exportAppStateAndTMValidators(
@@ -95,15 +81,15 @@ func exportAppStateAndTMValidators(
 ) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 
 	if height != -1 {
-		aApp := app.NewInitApp(logger, db, traceStore, false, uint(1))
-		err := aApp.LoadHeight(height)
+		nsApp := app.NewDataManagementApp(logger, db)
+		err := nsApp.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
 		}
-		return aApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+		return nsApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
-	aApp := app.NewInitApp(logger, db, traceStore, true, uint(1))
+	nsApp := app.NewDataManagementApp(logger, db)
 
-	return aApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+	return nsApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }

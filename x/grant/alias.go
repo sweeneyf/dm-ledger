@@ -5,15 +5,15 @@ import (
 	"github.com/sweeneyf/dm-ledger/x/grant/types"
 )
 
-const (
-	// TODO: define constants that you would like exposed from your module
+// The main reason for having this file is to prevent import cycles
 
+const (
 	ModuleName        = types.ModuleName
 	RouterKey         = types.RouterKey
 	StoreKey          = types.StoreKey
 	DefaultParamspace = types.DefaultParamspace
-	QueryParams       = types.QueryParams
-	QuerierRoute      = types.QuerierRoute
+	//QueryParams       = types.QueryParams
+	QuerierRoute = types.QuerierRoute
 )
 
 var (
@@ -26,15 +26,23 @@ var (
 	ValidateGenesis     = types.ValidateGenesis
 	// TODO: Fill out function aliases
 
-	// variable aliases
-	ModuleCdc     = types.ModuleCdc
+	// ModuleCdc -
+	ModuleCdc = types.ModuleCdc
 	// TODO: Fill out variable aliases
 )
 
 type (
-	Keeper       = keeper.Keeper
+	//Keeper -
+	Keeper = keeper.Keeper
+	//GenesisState -
 	GenesisState = types.GenesisState
-	Params       = types.Params
 
-	// TODO: Fill out module types
+	// Params -
+	Params = types.Params
+
+	// MsgAccessRequest -
+	MsgAccessRequest = types.MsgAccessRequest
+
+	// AccessControlGrant -
+	AccessControlGrant = types.AccessControlGrant
 )
