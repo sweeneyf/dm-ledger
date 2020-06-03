@@ -4,9 +4,9 @@ VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 
 # TODO: Update the ldflags with the app, client & server names
-ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=DataAccessManagement \
-	-X github.com/cosmos/cosmos-sdk/version.ServerName=damd \
-	-X github.com/cosmos/cosmos-sdk/version.ClientName=damcli \
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=DataAccessLedger \
+	-X github.com/cosmos/cosmos-sdk/version.ServerName=dald \
+	-X github.com/cosmos/cosmos-sdk/version.ClientName=dalcli \
 	-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) 
 
@@ -15,8 +15,8 @@ BUILD_FLAGS := -ldflags '$(ldflags)'
 all: install
 
 install: go.sum
-		go install -mod=readonly $(BUILD_FLAGS) ./cmd/damd
-		go install -mod=readonly $(BUILD_FLAGS) ./cmd/damcli
+		go install -mod=readonly $(BUILD_FLAGS) ./cmd/dald
+		go install -mod=readonly $(BUILD_FLAGS) ./cmd/dalcli
 
 go.sum: go.mod
 		@echo "--> Ensure dependencies have not been modified"

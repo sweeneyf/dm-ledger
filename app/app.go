@@ -28,14 +28,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/supply"
 )
 
-const appName = "datamanagement"
+const appName = "dataaccessledger"
 
 var (
 	// DefaultCLIHome default home directories for the application CLI
-	DefaultCLIHome = os.ExpandEnv("$HOME/.damcli")
+	DefaultCLIHome = os.ExpandEnv("$HOME/.dalcli")
 
 	// DefaultNodeHome sets the folder where the applcation data and configuration will be stored
-	DefaultNodeHome = os.ExpandEnv("$HOME/.damd")
+	DefaultNodeHome = os.ExpandEnv("$HOME/.dald")
 
 	// ModuleBasics NewBasicManager is in charge of setting up basic module elements
 	ModuleBasics = module.NewBasicManager(
