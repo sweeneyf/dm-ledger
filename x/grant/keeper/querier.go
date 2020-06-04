@@ -12,6 +12,8 @@ import (
 const (
 	// QueryGrant -
 	QueryGrant = "grant"
+	// QueryGrants - a list of a access grants
+	QueryGrants = "list"
 )
 
 // NewQuerier is the module level router for state queries
@@ -20,6 +22,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 		switch path[0] {
 		case QueryGrant:
 			return queryGrant(ctx, path[1:], req, keeper)
+		case QueryGrants:
+			return queryGrants(ctx, req, keeper)
 		default:
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "unknown grant query endpoint")
 		}
@@ -35,6 +39,24 @@ func queryGrant(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Ke
 	}
 
 	res, err := codec.MarshalJSONIndent(keeper.cdc, types.QueryResGrant{Value: *value})
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return res, nil
+}
+
+// this function returns a list of all the keys for grants
+func queryGrants(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
+	var grantsList types.QueryResGrants
+
+	iterator := keeper.GetGrantsIterator(ctx)
+
+	for ; iterator.Valid(); iterator.Next() {
+		grantsList = append(grantsList, string(iterator.Key()))
+	}
+
+	res, err := codec.MarshalJSONIndent(keeper.cdc, grantsList)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

@@ -30,19 +30,30 @@ dalcli keys add dp2 # data processor 2
 dald add-genesis-account $(dalcli keys show ds1 -a) 1000xal
 dald add-genesis-account $(dalcli keys show dc1 -a) 1000xal,100000000stake
 dald add-genesis-account $(dalcli keys show dp1 -a) 1000xal
-dald add-genesis-account $(dalcli keys show ds2-a) 1000xal
+dald add-genesis-account $(dalcli keys show ds2 -a) 1000xal
 dald add-genesis-account $(dalcli keys show dc2 -a) 1000xal,100000000stake
-dald add-genesis-account $(dalcli keys show dp2-a) 1000xal
+dald add-genesis-account $(dalcli keys show dp2 -a) 1000xal
 
 
 # let the application know that DC1 willbethe only validator
-dald gentx --name dc1
+dald gentx --name dc1 --keyring-backend test
 
 # let the application know we are done configuring it
 dald collect-gentxs
 
 # validate te genesis file
 dald validate-genesis
+
+
+
+# ***** sopme basic tests to see if it running correctly
+dalcli query account $(dalcli keys show dc1 -a)
+
+#Create a grant
+dalcli tx grant create $(dalcli keys show dc1 -a) $(dalcli keys show dp1 -a) read location 1xal --from ds1
+
+
+
 
 
 

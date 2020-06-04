@@ -7,6 +7,7 @@ import (
 // RegisterCodec registers concrete types on the Amino codec
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgAccessRequest{}, "grant/AccessRequest", nil)
+	cdc.RegisterConcrete(MsgCreateGrant{}, "grant/CreateGrant", nil)
 }
 
 // ModuleCdc defines the module codec

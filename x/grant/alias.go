@@ -42,6 +42,7 @@ type (
 
 	// MsgAccessRequest -
 	MsgAccessRequest = types.MsgAccessRequest
+	MsgCreateGrant   = types.MsgCreateGrant
 
 	// AccessControlGrant -
 	AccessControlGrant = types.AccessControlGrant

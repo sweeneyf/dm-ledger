@@ -57,3 +57,9 @@ func (k Keeper) DeleteAccessControlRecord(ctx sdk.Context, key string) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete([]byte(key))
 }
+
+// GetGrantsIterator - Get an iterator over all grants in which the keys
+func (k Keeper) GetGrantsIterator(ctx sdk.Context) sdk.Iterator {
+	store := ctx.KVStore(k.storeKey)
+	return sdk.KVStorePrefixIterator(store, nil)
+}

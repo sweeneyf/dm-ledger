@@ -25,8 +25,8 @@ func ValidateGenesis(data GenesisState) error {
 		if record.Processor.Empty() {
 			return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "requestor cannot be empty")
 		}
-		if record.Owner.Empty() {
-			return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "owner cannot be empty")
+		if record.Subject.Empty() {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "subject cannot be empty")
 		}
 		if record.Controller.Empty() {
 			return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "controller cannot be empty")

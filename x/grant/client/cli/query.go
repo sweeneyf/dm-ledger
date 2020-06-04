@@ -24,12 +24,13 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	}
 	grantQueryCmd.AddCommand(flags.GetCommands(
 		GetCmdGetGrant(storeKey, cdc),
+		GetCmdListGrants(storeKey, cdc),
 	)...)
 
 	return grantQueryCmd
 }
 
-// GetCmdGetGrant queries information about a frant
+// GetCmdGetGrant queries information about a grant
 func GetCmdGetGrant(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "grant [name]",
@@ -46,6 +47,28 @@ func GetCmdGetGrant(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			}
 
 			var out types.QueryResGrant
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetCmdListGrants queries a list of all grants in the system
+func GetCmdListGrants(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "list",
+		Short: "list",
+		// Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/list", queryRoute), nil)
+			if err != nil {
+				fmt.Printf("could not get query grant list\n")
+				return nil
+			}
+
+			var out types.QueryResGrants
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},
