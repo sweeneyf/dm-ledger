@@ -46,9 +46,9 @@ func (k Keeper) GetAccessControlGrant(ctx sdk.Context, key string) (*types.Acces
 }
 
 // SetAccessControlRecord returns the grant
-func (k Keeper) SetAccessControlRecord(ctx sdk.Context, key string, value types.AccessControlGrant) {
+func (k Keeper) SetAccessControlRecord(ctx sdk.Context, key string, value *types.AccessControlGrant) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshalBinaryLengthPrefixed(value)
+	bz := k.cdc.MustMarshalBinaryLengthPrefixed(*value)
 	store.Set([]byte(key), bz)
 }
 

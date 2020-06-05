@@ -36,14 +36,20 @@ type (
 	Keeper = keeper.Keeper
 	//GenesisState -
 	GenesisState = types.GenesisState
-
 	// Params -
 	Params = types.Params
 
 	// MsgAccessRequest -
 	MsgAccessRequest = types.MsgAccessRequest
-	MsgCreateGrant   = types.MsgCreateGrant
+	// MsgCreateGrant -
+	MsgCreateGrant = types.MsgCreateGrant
+	// MsgDeleteGrant -
+	MsgDeleteGrant = types.MsgDeleteGrant
 
 	// AccessControlGrant -
 	AccessControlGrant = types.AccessControlGrant
+	// Dataset -
+	Dataset = types.Dataset
+	// Policy -
+	Policy = types.Policy
 )

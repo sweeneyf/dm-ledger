@@ -33,16 +33,16 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 // GetCmdGetGrant queries information about a grant
 func GetCmdGetGrant(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "grant [name]",
-		Short: "grant name",
+		Use:   "detail [id]",
+		Short: "gives the detail of a grant",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			name := args[0]
+			id := args[0]
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/resolve/%s", queryRoute, name), nil)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, types.QueryGrantDetail, id), nil)
 			if err != nil {
-				fmt.Printf("could not query grant - %s \n", name)
+				fmt.Printf("could not query grant - %s %v\n", id, err)
 				return nil
 			}
 
@@ -62,7 +62,7 @@ func GetCmdListGrants(queryRoute string, cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/list", queryRoute), nil)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, types.QueryGrantList), nil)
 			if err != nil {
 				fmt.Printf("could not get query grant list\n")
 				return nil

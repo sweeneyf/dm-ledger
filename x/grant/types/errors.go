@@ -7,5 +7,6 @@ import (
 // TODO: Fill out some custom errors for the module
 // You can see how they are constructed below:
 var (
-	ErrInvalid = sdkerrors.Register(ModuleName, 1, "custom error message")
+	ErrGrantDoesNotExist         = sdkerrors.Register(ModuleName, 1, "grant does not exist")
+	ErrGrantLocationDoesNotExist = sdkerrors.Register(ModuleName, 2, "grant location does not exist")
 )

@@ -50,8 +50,18 @@ dald validate-genesis
 dalcli query account $(dalcli keys show dc1 -a)
 
 #Create a grant
-dalcli tx grant create $(dalcli keys show dc1 -a) $(dalcli keys show dp1 -a) read location 1xal --from ds1
+#dalcli tx grant create $(dalcli keys show dc1 -a) $(dalcli keys show dp1 -a) read location 1xal -y --from ds1
+ dalcli tx grant create $(dalcli keys show dc1 -a) $(dalcli keys show dp1 -a) read location 1xal -y --from ds1
+ dalcli tx grant create "cosmos1w9uu7t4p273m60z03lw68hc56jj6dxxvla4sxn", "cosmos168t5kr9rdpknzmw9kxspfdxcm26vvneffk28dx", "Read", "location", "1xal", "-y", "--from", "ds1"
 
+#Delete a grant
+dalcli tx grant delete $(dalcli keys show dc1 -a) $(dalcli keys show dp1 -a) location --from ds1
+
+#List all grants
+dalcli q grant list
+
+#List specific grants
+dalcli q grant detail "cosmos1uu6lc2370ztj4d29lw6wcrw20093kuvr8gtyd5cosmos1fk0nlu3ysspx46cy8s98l0e3w9tfssnrmf2ntfcosmos1wukwvah8d9cfkvygyk032rasanfh4xdwhf2wp4"
 
 
 

@@ -32,6 +32,7 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	grantTxCmd.AddCommand(flags.PostCommands(
 		GetCmdRequestAcess(cdc),
 		GetCmdCreateGrant(cdc),
+		GetCmdDeleteGrant(cdc),
 	)...)
 
 	return grantTxCmd
@@ -68,7 +69,7 @@ func GetCmdRequestAcess(cdc *codec.Codec) *cobra.Command {
 // GetCmdCreateGrant is the CLI command for creating a grant on a subjects data
 func GetCmdCreateGrant(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "create [data-subject] [data-controller] [data-processor] access-type data location",
+		Use:   "create [data-subject] [data-controller] [data-processor] access-type data location --from [data-subject]",
 		Short: "grant access to a subjects data with a particlular controller to the processor",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -82,12 +83,12 @@ func GetCmdCreateGrant(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			controllerAddress, err := GetAccAddress(cliCtx.Input, args[0])
+			controllerAddress, err := getAccAddress(cliCtx.Input, args[0])
 			if err != nil {
 				return err
 			}
 
-			processorAddress, err := GetAccAddress(cliCtx.Input, args[1])
+			processorAddress, err := getAccAddress(cliCtx.Input, args[1])
 			if err != nil {
 				return err
 			}
@@ -104,9 +105,42 @@ func GetCmdCreateGrant(cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-// GetAccAddress returns an account address and Keybase name given an account identifier of either an address or key name passed
-func GetAccAddress(input io.Reader, accId string) (sdk.AccAddress, error) {
-	if accId == "" {
+// GetCmdDeleteGrant is the CLI command for creating a grant on a subjects data
+func GetCmdDeleteGrant(cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "delete [data-controller] [data-processor] data-location --from [data-subject]",
+		Short: "delete grant access to a subjects data location with a particlular controller to the processor",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
+
+			controllerAddress, err := getAccAddress(cliCtx.Input, args[0])
+			if err != nil {
+				return err
+			}
+
+			processorAddress, err := getAccAddress(cliCtx.Input, args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgDeleteGrant(cliCtx.GetFromAddress(), controllerAddress, processorAddress, args[2])
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+}
+
+// getAccAddress returns an account address and Keybase name given an account identifier of either an address or key name passed
+func getAccAddress(input io.Reader, accID string) (sdk.AccAddress, error) {
+	if accID == "" {
 		return nil, nil
 	}
 
@@ -117,13 +151,13 @@ func GetAccAddress(input io.Reader, accId string) (sdk.AccAddress, error) {
 	}
 
 	var info keys.Info
-	if addr, err := sdk.AccAddressFromBech32(accId); err == nil {
+	if addr, err := sdk.AccAddressFromBech32(accID); err == nil {
 		info, err = keybase.GetByAddress(addr)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		info, err = keybase.Get(accId)
+		info, err = keybase.Get(accID)
 		if err != nil {
 			return nil, err
 		}

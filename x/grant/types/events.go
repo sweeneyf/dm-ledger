@@ -2,14 +2,16 @@ package types
 
 // grant module event types
 const (
-	// TODO: Create your event types
-	// EventType<Action>    		= "action"
+	EventTypeCreateGrant   = "CreateGrant"
+	EventTypeDeleteGrant   = "DeleteGrant"
+	EventTypeAccessRequest = "AccessRequest"
 
-	// TODO: Create keys fo your events, the values will be derivided from the msg
-	// AttributeKeyAddress  		= "address"
-
-	// TODO: Some events may not have values for that reason you want to emit that something happened.
-	// AttributeValueDoubleSign = "double_sign"
+	AttributeSubject    = "subject"
+	AttributeController = "controller"
+	AttributeProcessor  = "processor"
+	AttributeLocation   = "location"
+	AttributeAccessType = "acessType"
+	AttributeReward     = "reward"
 
 	AttributeValueCategory = ModuleName
 )

@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	"github.com/sweeneyf/dm-ledger/x/grant/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -9,20 +11,13 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const (
-	// QueryGrant -
-	QueryGrant = "grant"
-	// QueryGrants - a list of a access grants
-	QueryGrants = "list"
-)
-
 // NewQuerier is the module level router for state queries
 func NewQuerier(keeper Keeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err error) {
 		switch path[0] {
-		case QueryGrant:
+		case types.QueryGrantDetail:
 			return queryGrant(ctx, path[1:], req, keeper)
-		case QueryGrants:
+		case types.QueryGrantList:
 			return queryGrants(ctx, req, keeper)
 		default:
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "unknown grant query endpoint")
@@ -35,7 +30,7 @@ func queryGrant(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Ke
 	value, err := keeper.GetAccessControlGrant(ctx, path[0])
 
 	if err != nil {
-		return []byte{}, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "could not query grant")
+		return []byte{}, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, fmt.Sprintf("could not query grant detail -%v", err))
 	}
 
 	res, err := codec.MarshalJSONIndent(keeper.cdc, types.QueryResGrant{Value: *value})

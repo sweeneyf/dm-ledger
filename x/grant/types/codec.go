@@ -8,6 +8,7 @@ import (
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgAccessRequest{}, "grant/AccessRequest", nil)
 	cdc.RegisterConcrete(MsgCreateGrant{}, "grant/CreateGrant", nil)
+	cdc.RegisterConcrete(MsgDeleteGrant{}, "grant/DeleteGrant", nil)
 }
 
 // ModuleCdc defines the module codec
