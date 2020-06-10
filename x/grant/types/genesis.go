@@ -31,8 +31,8 @@ func ValidateGenesis(data GenesisState) error {
 		if record.Controller.Empty() {
 			return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "controller cannot be empty")
 		}
-		if len(record.Datasets) == 0 {
-			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "data sets cannot be empty")
+		if record.GDPRData.Location == "" {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "data location cannot be empty")
 		}
 	}
 	return nil

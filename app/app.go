@@ -200,7 +200,6 @@ func NewDataManagementApp(
 	app.grantKeeper = grant.NewKeeper(
 		app.cdc,
 		keys[grant.StoreKey],
-		app.bankKeeper,
 	)
 
 	app.mm = module.NewManager(

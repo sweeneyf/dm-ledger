@@ -99,7 +99,6 @@ func GetCmdCreateGrant(cdc *codec.Codec) *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}

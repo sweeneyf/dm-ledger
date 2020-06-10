@@ -6,14 +6,14 @@ import (
 
 // AccessControlGrant - hold the access control information for data
 type AccessControlGrant struct {
-	Subject    sdk.AccAddress     `json:"subject"`
-	Controller sdk.AccAddress     `json:"controller"`
-	Processor  sdk.AccAddress     `json:"processor"`
-	Datasets   map[string]Dataset `json:"dataset"`
+	Subject    sdk.AccAddress `json:"subject"`
+	Controller sdk.AccAddress `json:"controller"`
+	Processor  sdk.AccAddress `json:"processor"`
+	GDPRData   GDPRData       `json:"gdpr_dataset"`
 }
 
-// Dataset hold information of the dataset being permissioned
-type Dataset struct {
+// GDPRData hold information of the data being permissioned
+type GDPRData struct {
 	Location string `json:"location"`
 	EncrKey  string `json:"encrKey"`
 	Policy   Policy `json:"policy"`
@@ -24,22 +24,23 @@ type Policy struct {
 	AccessType string `json:"accessType"`
 }
 
-// AddDataset - adds a dataset to the accesscontrolgrant
-func (a *AccessControlGrant) AddDataset(location string, encrKey string, policy Policy) {
-	a.Datasets[location] = Dataset{
+/* AddGDPRData - adds data to the accesscontrolgrant
+func (a *AccessControlGrant) AddGDPRData(location string, encrKey string, policy Policy) {
+	xgData := GDPRData{
 		Location: location,
 		EncrKey:  encrKey,
 		Policy:   policy,
 	}
+	a.GDPRDataset[location] = &xgData
 }
 
-// RemoveDataset - adds a dataset to the accesscontrolgrant
-func (a *AccessControlGrant) RemoveDataset(location string, encrKey string) error {
-	_, ok := a.Datasets[location]
+// RemoveGDPRData - removes data from the accesscontrolgrant
+func (a *AccessControlGrant) RemoveGDPRData(location string, encrKey string) error {
+	_, ok := a.GDPRDataset[location]
 	if ok {
-		delete(a.Datasets, location)
+		delete(a.GDPRDataset, location)
 	} else {
 		return ErrGrantLocationDoesNotExist
 	}
 	return nil
-}
+} */

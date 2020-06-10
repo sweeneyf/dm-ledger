@@ -20,11 +20,10 @@ type Keeper struct {
 }
 
 // NewKeeper creates new instances of the grant Keeper
-func NewKeeper(cdc *codec.Codec, storeKey sdk.StoreKey, coinKeeper types.BankKeeper) Keeper {
+func NewKeeper(cdc *codec.Codec, storeKey sdk.StoreKey) Keeper {
 	return Keeper{
-		cdc:        cdc,
-		storeKey:   storeKey,
-		CoinKeeper: coinKeeper,
+		cdc:      cdc,
+		storeKey: storeKey,
 	}
 }
 

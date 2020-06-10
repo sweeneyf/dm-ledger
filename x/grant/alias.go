@@ -48,8 +48,8 @@ type (
 
 	// AccessControlGrant -
 	AccessControlGrant = types.AccessControlGrant
-	// Dataset -
-	Dataset = types.Dataset
+	// GDPRData -
+	GDPRData = types.GDPRData
 	// Policy -
 	Policy = types.Policy
 )

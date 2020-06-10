@@ -16,7 +16,7 @@ func NewHandler(k Keeper) sdk.Handler {
 		case MsgAccessRequest:
 			return handleMsgAccessRequest(ctx, k, msg)
 		case MsgCreateGrant:
-			return handleMsgCreateGrant(ctx, k, msg)
+			return HandleMsgCreateGrant(ctx, k, msg)
 		// TODO: Define your msg cases
 		//
 		//Example:
@@ -29,31 +29,29 @@ func NewHandler(k Keeper) sdk.Handler {
 	}
 }
 
-func handleMsgCreateGrant(ctx sdk.Context, k Keeper, msg MsgCreateGrant) (*sdk.Result, error) {
+// HandleMsgCreateGrant - Handler for Cretaing a grant
+func HandleMsgCreateGrant(ctx sdk.Context, k Keeper, msg MsgCreateGrant) (*sdk.Result, error) {
 
+	//this will create or overwrite the grant asscoiated with key generated
 	key := msg.Subject.String() + msg.Controller.String() + msg.Processor.String()
-	grant, _ := k.GetAccessControlGrant(ctx, key)
-	// if grant doesn't already exist create it
-	if grant == nil {
-		grant = &AccessControlGrant{
-			Subject:    msg.Subject,
-			Controller: msg.Controller,
-			Processor:  msg.Processor,
-			Datasets:   make(map[string]Dataset),
-		}
+	grant := &AccessControlGrant{
+		Subject:    msg.Subject,
+		Controller: msg.Controller,
+		Processor:  msg.Processor,
+		GDPRData: GDPRData{
+			Location: msg.Location,
+			EncrKey:  "TODO Change this to encrKey",
+			Policy:   Policy{AccessType: msg.AccessType},
+		},
 	}
-	// now update the grant with the dataset passed
-	//grant.AddDataset(msg.Location, "TODO Change this to encrKey", Policy{AccessType: msg.AccessType})
-
 	// save the grant to the grant store
 	k.SetAccessControlRecord(ctx, key, grant)
-	//emit event
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeAccessRequest),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Processor.String()),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeCreateGrant),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Subject.String()),
 			sdk.NewAttribute(types.AttributeController, msg.Controller.String()),
 			sdk.NewAttribute(types.AttributeSubject, msg.Subject.String()),
 			sdk.NewAttribute(types.AttributeLocation, msg.Location),
@@ -67,8 +65,6 @@ func handleMsgCreateGrant(ctx sdk.Context, k Keeper, msg MsgCreateGrant) (*sdk.R
 func handleMsgDeletGrant(ctx sdk.Context, k Keeper, msg MsgDeleteGrant) (*sdk.Result, error) {
 
 	key := msg.Subject.String() + msg.Controller.String() + msg.Processor.String()
-	log := k.Logger(ctx)
-	log.Debug(fmt.Sprintf("key is %s", key))
 
 	/*
 		grant, _ := k.GetAccessControlGrant(ctx, key)
@@ -96,7 +92,7 @@ func handleMsgDeletGrant(ctx sdk.Context, k Keeper, msg MsgDeleteGrant) (*sdk.Re
 			sdk.NewAttribute(types.AttributeLocation, msg.Location),
 		),
 	)
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events(), Log: fmt.Sprintf("key is %s", key)}, nil
 }
 
 // handleMsgAccessRequest handles the access request
