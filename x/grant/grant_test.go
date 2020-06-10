@@ -1,6 +1,7 @@
 package grant_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/sweeneyf/dm-ledger/x/grant/types"
@@ -59,11 +60,12 @@ func (s *GrantSuite) SetupSuite() {
 func (s *GrantSuite) TestHandleMsgCreateGrantSuccessful() {
 	coins, _ := sdk.ParseCoins("10")
 	msgCreateGrant := types.NewMsgCreateGrant(s.DS1, s.DC1, s.DP1, "Read", "Location", coins)
+
 	res, err := grant.HandleMsgCreateGrant(s.Ctx, s.Keeper, msgCreateGrant)
 
 	resultEvent := res.Events[0]
 	// now check the event to verify that the Grant was created successfully.
-	s.Require().Equal(err, nil)
+	s.Require().Nil(err)
 	s.Require().Equal(8, len(resultEvent.Attributes))
 	for _, attrib := range resultEvent.Attributes {
 		switch string(attrib.GetKey()) {
@@ -84,21 +86,40 @@ func (s *GrantSuite) TestHandleMsgCreateGrantSuccessful() {
 		case types.AttributeReward:
 			s.Require().Equal(msgCreateGrant.Reward.String(), string(attrib.GetValue()))
 		default:
-			s.Require().Equal("This means we have a non expected attribute type", string(attrib.GetKey()))
+			s.Require().Fail(fmt.Sprintf("we have a non expected attribute type '%v'", string(attrib.GetKey())))
 		}
 	}
 }
 
-/*
-sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeAccessRequest),
-sdk.NewAttribute(sdk.AttributeKeySender, msg.Processor.String()),
-sdk.NewAttribute(types.AttributeController, msg.Controller.String()),
-sdk.NewAttribute(types.AttributeSubject, msg.Subject.String()),
-sdk.NewAttribute(types.AttributeLocation, msg.Location),
-sdk.NewAttribute(types.AttributeAccessType, msg.AccessType),
-sdk.NewAttribute(types.AttributeReward, msg.Reward.String()),
-*/
+func (s *GrantSuite) TestHandleMsgDeleteGrantSuccessful() {
+	// create a test Grant
+	coins, _ := sdk.ParseCoins("10")
+	msgCreateGrant := types.NewMsgCreateGrant(s.DS1, s.DC1, s.DP1, "Read", "Location", coins)
+
+	key := msgCreateGrant.Subject.String() + msgCreateGrant.Controller.String() + msgCreateGrant.Processor.String()
+	testGrantToInsert := &grant.AccessControlGrant{
+		Subject:    msgCreateGrant.Subject,
+		Controller: msgCreateGrant.Controller,
+		Processor:  msgCreateGrant.Processor,
+		GDPRData: grant.GDPRData{
+			Location: msgCreateGrant.Location,
+			EncrKey:  "TODO Change this to encrKey",
+			Policy:   grant.Policy{AccessType: msgCreateGrant.AccessType},
+		},
+	}
+	// save the grant to the grant store
+	s.Keeper.SetAccessControlRecord(s.Ctx, key, testGrantToInsert)
+
+	deletedGrant, _ := s.Keeper.GetAccessControlGrant(s.Ctx, key)
+
+	msgDeleteGrant := types.NewMsgDeleteGrant(s.DS1, s.DC1, s.DP1, "Location")
+	_, err := grant.HandleMsgDeletGrant(s.Ctx, s.Keeper, msgDeleteGrant)
+
+	deletedGrant, _ = s.Keeper.GetAccessControlGrant(s.Ctx, key)
+
+	s.Require().Nil(err)
+	s.Require().Nil(deletedGrant)
+}
 
 func TestSuite(t *testing.T) {
 	// This is what actually runs our suite

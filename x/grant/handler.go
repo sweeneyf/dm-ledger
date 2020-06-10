@@ -62,7 +62,8 @@ func HandleMsgCreateGrant(ctx sdk.Context, k Keeper, msg MsgCreateGrant) (*sdk.R
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleMsgDeletGrant(ctx sdk.Context, k Keeper, msg MsgDeleteGrant) (*sdk.Result, error) {
+// HandleMsgDeletGrant - Handler for deleting a grant
+func HandleMsgDeletGrant(ctx sdk.Context, k Keeper, msg MsgDeleteGrant) (*sdk.Result, error) {
 
 	key := msg.Subject.String() + msg.Controller.String() + msg.Processor.String()
 
