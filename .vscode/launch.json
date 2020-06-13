@@ -11,11 +11,12 @@
             "mode": "auto",
             "program": "${fileDirname}",
             "env": {},
-            "args": ["q", "grant", "detail", "cosmos1uu6lc2370ztj4d29lw6wcrw20093kuvr8gtyd5cosmos1fk0nlu3ysspx46cy8s98l0e3w9tfssnrmf2ntfcosmos1wukwvah8d9cfkvygyk032rasanfh4xdwhf2wp4" ]
-//            "args": ["q", "grant", "list" ]
-//            "args": ["tx", "grant", "delete", "dc1", "dp1", "location",  "-y", "--from", "ds1"]
+//            "args": ["q", "permission", "detail", "cosmos1uu6lc2370ztj4d29lw6wcrw20093kuvr8gtyd5cosmos1fk0nlu3ysspx46cy8s98l0e3w9tfssnrmf2ntfcosmos1wukwvah8d9cfkvygyk032rasanfh4xdwhf2wp4" ]
+            "args": ["keys", "add",  "ds7"  ]
+//            "args": ["q", "permission", "list" ]
+//            "args": ["tx", "permission", "delete", "dc1", "dp1", "location",  "-y", "--from", "ds1"]
 
-//            "args": ["tx", "grant", "create", "cosmos1w9uu7t4p273m60z03lw68hc56jj6dxxvla4sxn", "cosmos168t5kr9rdpknzmw9kxspfdxcm26vvneffk28dx", "Read", "location", "1xal", "-y", "--from", "ds1"]
+//            "args": ["tx", "permission", "create", "cosmos1w9uu7t4p273m60z03lw68hc56jj6dxxvla4sxn", "cosmos168t5kr9rdpknzmw9kxspfdxcm26vvneffk28dx", "Read", "location", "1xal", "-y", "--from", "ds1"]
         }
     ]
 }

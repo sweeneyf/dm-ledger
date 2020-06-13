@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/sweeneyf/dm-ledger/x/grant"
+	"github.com/sweeneyf/dm-ledger/x/permission"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
@@ -48,7 +48,7 @@ var (
 		slashing.AppModuleBasic{},
 		supply.AppModuleBasic{},
 
-		grant.AppModule{},
+		permission.AppModule{},
 	)
 	// account permissions
 	maccPerms = map[string][]string{
@@ -83,14 +83,14 @@ type dataManagementApp struct {
 	subspaces map[string]params.Subspace
 
 	// Keepers
-	accountKeeper  auth.AccountKeeper
-	bankKeeper     bank.Keeper
-	stakingKeeper  staking.Keeper
-	slashingKeeper slashing.Keeper
-	distrKeeper    distr.Keeper
-	supplyKeeper   supply.Keeper
-	paramsKeeper   params.Keeper
-	grantKeeper    grant.Keeper
+	accountKeeper    auth.AccountKeeper
+	bankKeeper       bank.Keeper
+	stakingKeeper    staking.Keeper
+	slashingKeeper   slashing.Keeper
+	distrKeeper      distr.Keeper
+	supplyKeeper     supply.Keeper
+	paramsKeeper     params.Keeper
+	permissionKeeper permission.Keeper
 
 	// Module Manager
 	mm *module.Manager
@@ -116,7 +116,7 @@ func NewDataManagementApp(
 	bApp.SetAppVersion(version.Version)
 
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
-		supply.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey, grant.StoreKey)
+		supply.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey, permission.StoreKey)
 
 	tkeys := sdk.NewTransientStoreKeys(params.TStoreKey)
 
@@ -195,18 +195,18 @@ func NewDataManagementApp(
 			app.slashingKeeper.Hooks()),
 	)
 
-	// The grantKeeper is the Keeper from the module for this tutorial
+	// The permissionKeeper is the Keeper from the module for this tutorial
 	// It handles interactions with the namestore
-	app.grantKeeper = grant.NewKeeper(
+	app.permissionKeeper = permission.NewKeeper(
 		app.cdc,
-		keys[grant.StoreKey],
+		keys[permission.StoreKey],
 	)
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
 		auth.NewAppModule(app.accountKeeper),
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
-		grant.NewAppModule(app.grantKeeper, app.bankKeeper),
+		permission.NewAppModule(app.permissionKeeper, app.bankKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
 		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.stakingKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.stakingKeeper),
@@ -225,7 +225,7 @@ func NewDataManagementApp(
 		auth.ModuleName,
 		bank.ModuleName,
 		slashing.ModuleName,
-		grant.ModuleName,
+		permission.ModuleName,
 		supply.ModuleName,
 		genutil.ModuleName,
 	)
