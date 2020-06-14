@@ -31,9 +31,9 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // GetPermission returns the access control record
-func (k Keeper) GetPermission(ctx sdk.Context, key string) (*types.AccessPermission, error) {
+func (k Keeper) GetPermission(ctx sdk.Context, key string) (*types.Permission, error) {
 	store := ctx.KVStore(k.storeKey)
-	var item types.AccessPermission
+	var item types.Permission
 	byteKey := []byte(key)
 	err := k.cdc.UnmarshalBinaryLengthPrefixed(store.Get(byteKey), &item)
 	if err != nil {
@@ -43,7 +43,7 @@ func (k Keeper) GetPermission(ctx sdk.Context, key string) (*types.AccessPermiss
 }
 
 // SetPermission inserts or overwrites the permission
-func (k Keeper) SetPermission(ctx sdk.Context, key string, value *types.AccessPermission) {
+func (k Keeper) SetPermission(ctx sdk.Context, key string, value *types.Permission) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(*value)
 	store.Set([]byte(key), bz)

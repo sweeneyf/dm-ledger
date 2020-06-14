@@ -4,7 +4,7 @@ rm -r ~/.dald
 
 # Initialize configuration files and genesis file
 # moniker is the name of your node
-dald init dl-node1 --chain-id access-ledger
+dald init dl-node1 --chain-id permission-ledger
 
 # Configure your CLI to eliminate need to declare them as flags
 # first line tells cli to interact with the correct node access-ledger
@@ -50,12 +50,10 @@ dald validate-genesis
 dalcli query account $(dalcli keys show dc1 -a)
 
 #Create a permission
-#dalcli tx permission create $(dalcli keys show dc1 -a) $(dalcli keys show dp1 -a) read location 1xal -y --from ds1
- dalcli tx permission create $(dalcli keys show dc1 -a) $(dalcli keys show dp1 -a) read location 1xal -y --from ds1
- dalcli tx permission create "cosmos1w9uu7t4p273m60z03lw68hc56jj6dxxvla4sxn", "cosmos168t5kr9rdpknzmw9kxspfdxcm26vvneffk28dx", "Read", "location", "1xal", "-y", "--from", "ds1"
+ dalcli tx permission create $(dalcli keys show ds2 -a) $(dalcli keys show dc1 -a) data-location data-hash  --from $(dalcli keys show ds2 -a)
 
 #Delete a permission
-dalcli tx permission delete $(dalcli keys show dc1 -a) $(dalcli keys show dp1 -a) location --from ds1
+dalcli tx permission delete $(dalcli keys show ds1 -a) $(dalcli keys show dc1 -a) --from ds1
 
 #List all permissions
 dalcli q permission list

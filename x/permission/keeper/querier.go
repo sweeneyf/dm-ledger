@@ -15,9 +15,9 @@ import (
 func NewQuerier(keeper Keeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err error) {
 		switch path[0] {
-		case types.QuerypermissionDetail:
+		case types.QueryPermissionDetail:
 			return querypermission(ctx, path[1:], req, keeper)
-		case types.QuerypermissionList:
+		case types.QueryPermissionList:
 			return querypermissions(ctx, req, keeper)
 		default:
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "unknown permission query endpoint")
@@ -33,7 +33,7 @@ func querypermission(ctx sdk.Context, path []string, req abci.RequestQuery, keep
 		return []byte{}, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, fmt.Sprintf("could not query permission detail -%v", err))
 	}
 
-	res, err := codec.MarshalJSONIndent(keeper.cdc, types.QueryRespermission{Value: *value})
+	res, err := codec.MarshalJSONIndent(keeper.cdc, types.QueryResPermission{Value: *value})
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -43,7 +43,7 @@ func querypermission(ctx sdk.Context, path []string, req abci.RequestQuery, keep
 
 // this function returns a list of all the keys for permissions
 func querypermissions(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
-	var permissionsList types.QueryRespermissions
+	var permissionsList types.QueryResPermissions
 
 	iterator := keeper.GetPermissionsIterator(ctx)
 

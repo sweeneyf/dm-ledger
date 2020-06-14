@@ -57,11 +57,10 @@ func (s *permissionSuite) SetupSuite() {
 	_ = s.Cms.LoadLatestVersion()
 }
 
-func (s *permissionSuite) TestHandleMsgCreatepermissionSuccessful() {
-	coins, _ := sdk.ParseCoins("10")
-	msgCreatepermission := types.NewMsgCreatepermission(s.DS1, s.DC1, s.DP1, "Read", "Location", coins)
+func (s *permissionSuite) TestHandleMsgCreatePermissionSuccessful() {
+	msgCreatePermission := types.NewMsgCreatePermission(s.DS1, s.DC1, "data Location", "data hash")
 
-	res, err := permission.HandleMsgCreatepermission(s.Ctx, s.Keeper, msgCreatepermission)
+	res, err := permission.HandleMsgCreatePermission(s.Ctx, s.Keeper, msgCreatePermission)
 
 	resultEvent := res.Events[0]
 	// now check the event to verify that the permission was created successfully.
@@ -72,19 +71,17 @@ func (s *permissionSuite) TestHandleMsgCreatepermissionSuccessful() {
 		case sdk.AttributeKeyModule:
 			s.Require().Equal(types.AttributeValueCategory, string(attrib.GetValue()))
 		case sdk.AttributeKeyAction:
-			s.Require().Equal(types.EventTypeCreatepermission, string(attrib.GetValue()))
+			s.Require().Equal(types.EventTypeCreatePermission, string(attrib.GetValue()))
 		case sdk.AttributeKeySender:
-			s.Require().Equal(msgCreatepermission.Subject.String(), string(attrib.GetValue()))
+			s.Require().Equal(msgCreatePermission.Subject.String(), string(attrib.GetValue()))
 		case types.AttributeController:
-			s.Require().Equal(msgCreatepermission.Controller.String(), string(attrib.GetValue()))
+			s.Require().Equal(msgCreatePermission.Controller.String(), string(attrib.GetValue()))
 		case types.AttributeSubject:
-			s.Require().Equal(msgCreatepermission.Subject.String(), string(attrib.GetValue()))
+			s.Require().Equal(msgCreatePermission.Subject.String(), string(attrib.GetValue()))
 		case types.AttributeDataPointer:
-			s.Require().Equal(msgCreatepermission.Location, string(attrib.GetValue()))
-		case types.AttributeAccessType:
-			s.Require().Equal(msgCreatepermission.AccessType, string(attrib.GetValue()))
-		case types.AttributeReward:
-			s.Require().Equal(msgCreatepermission.Reward.String(), string(attrib.GetValue()))
+			s.Require().Equal(msgCreatePermission.DataPointer, string(attrib.GetValue()))
+		case types.AttributeDataHash:
+			s.Require().Equal(msgCreatePermission.DataHash, string(attrib.GetValue()))
 		default:
 			s.Require().Fail(fmt.Sprintf("we have a non expected attribute type '%v'", string(attrib.GetKey())))
 		}
@@ -92,10 +89,10 @@ func (s *permissionSuite) TestHandleMsgCreatepermissionSuccessful() {
 }
 
 /*
-func (s *permissionSuite) TestHandleMsgDeletepermissionSuccessful() {
+func (s *permissionSuite) TestHandleMsgDeletePermissionSuccessful() {
 	// create a test permission
-	key := msgCreatepermission.Subject.String() + msgCreatepermission.Controller.String() + msgCreatepermission.Processor.String()
-	testpermissionToInsert := &permission.AccessPermission{
+	key := msgCreatePermission.Subject.String() + msgCreatePermission.Controller.String() + msgCreatePermission.Processor.String()
+	testpermissionToInsert := &permission.Permission{
 		Subject:    s.DS1,
 		Controller: s.DC1,
 		Processor:  s.DP1,
@@ -108,8 +105,8 @@ func (s *permissionSuite) TestHandleMsgDeletepermissionSuccessful() {
 	// save the permission to the permission store
 	s.Keeper.SetPermission(s.Ctx, key, testpermissionToInsert)
 
-	msgDeletepermission := types.NewMsgDeletepermission(s.DS1, s.DC1, s.DP1, "Location")
-	_, err := permission.HandleMsgDeletpermission(s.Ctx, s.Keeper, msgDeletepermission)
+	msgDeletePermission := types.NewMsgDeletePermission(s.DS1, s.DC1, s.DP1, "Location")
+	_, err := permission.HandleMsgDeletePermission(s.Ctx, s.Keeper, msgDeletePermission)
 
 	// try and retrieve it again to make sure it is deleted
 	deletedpermission, _ = s.Keeper.GetPermission(s.Ctx, key)

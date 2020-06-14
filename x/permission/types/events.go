@@ -2,15 +2,15 @@ package types
 
 // permission module event types
 const (
-	EventTypeCreatepermission = "Createpermission"
-	EventTypeDeletepermission = "Deletepermission"
+	EventTypeCreatePermission = "CreatePermission"
+	EventTypeDeletePermission = "DeletePermission"
 	EventTypeAccessRequest    = "AccessRequest"
 
 	AttributeSubject     = "subject"
 	AttributeController  = "controller"
 	AttributeProcessor   = "processor"
 	AttributeDataPointer = "dataPointer"
-	AttributeAccessType  = "acessType"
+	AttributeDataHash    = "dataHash"
 	AttributeReward      = "reward"
 
 	AttributeValueCategory = ModuleName

@@ -49,7 +49,7 @@ func registerHandler(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		// create the message
-		msg := types.NewMsgRegister(subjAddr, contrAddr, req.DataPointer, req.DataHash)
+		msg := types.NewMsgCreatePermission(subjAddr, contrAddr, req.DataPointer, req.DataHash)
 		err = msg.ValidateBasic()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

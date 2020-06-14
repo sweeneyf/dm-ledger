@@ -31,31 +31,36 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 
 	permissionTxCmd.AddCommand(flags.PostCommands(
 		GetCmdRequestAcess(cdc),
-		GetCmdCreatepermission(cdc),
-		GetCmdDeletepermission(cdc),
+		GetCmdCreatePermission(cdc),
+		GetCmdDeletePermission(cdc),
 	)...)
 
 	return permissionTxCmd
 }
 
-// GetCmdRegister is the CLI command for registering a data subject with a data controller
-func GetCmdRegister(cdc *codec.Codec) *cobra.Command {
+// GetCmdCreatePermission is the CLI command for registering a data subject with a data controller
+func GetCmdCreatePermission(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "register [data-location] [data-controller]  --from [data-subject]",
+		Use:   "create [data-subject] [data-controller] [data-pointer] [data-hash]",
 		Short: "register a data subjects data with a particlular controller",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
+			/*subjectAddress, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}*/
+
 			controllerAddress, err := getAccAddress(cliCtx.Input, args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgRegister(cliCtx.GetFromAddress(), controllerAddress, args[0], args[2])
+			msg := types.NewMsgCreatePermission(cliCtx.GetFromAddress(), controllerAddress, args[2], args[3])
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -94,67 +99,28 @@ func GetCmdRequestAcess(cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-// GetCmdCreatepermission is the CLI command for creating a permission on a subjects data
-func GetCmdCreatepermission(cdc *codec.Codec) *cobra.Command {
+// GetCmdDeletePermission is the CLI command for creating a permission on a subjects data
+func GetCmdDeletePermission(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "create [data-subject] [data-controller] [data-processor] access-type data location --from [data-subject]",
-		Short: "permission access to a subjects data with a particlular controller to the processor",
-		Args:  cobra.ExactArgs(5),
+		Use:   "delete [data-subject] [data-controller]",
+		Short: "delete permission to a subjects data location with a particlular controller",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			coins, err := sdk.ParseCoins(args[4]) // we expect the fifth argument to be the reward
+			subjectAddress, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+			controllerAddress, err := sdk.AccAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
 
-			controllerAddress, err := getAccAddress(cliCtx.Input, args[0])
-			if err != nil {
-				return err
-			}
-
-			processorAddress, err := getAccAddress(cliCtx.Input, args[1])
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgCreatepermission(cliCtx.GetFromAddress(), controllerAddress, processorAddress, args[2], args[3], coins)
-			//			msg := types.NewMsgCreatepermission(cliCtx.GetFromAddress(), cliCtx.GetFromAddress(), cliCtx.GetFromAddress(), args[3], args[4], coins)
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
-		},
-	}
-}
-
-// GetCmdDeletepermission is the CLI command for creating a permission on a subjects data
-func GetCmdDeletepermission(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "delete [data-controller] [data-processor] data-location --from [data-subject]",
-		Short: "delete permission access to a subjects data location with a particlular controller to the processor",
-		Args:  cobra.ExactArgs(3),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			inBuf := bufio.NewReader(cmd.InOrStdin())
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
-
-			controllerAddress, err := getAccAddress(cliCtx.Input, args[0])
-			if err != nil {
-				return err
-			}
-
-			processorAddress, err := getAccAddress(cliCtx.Input, args[1])
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgDeletepermission(cliCtx.GetFromAddress(), controllerAddress, processorAddress, args[2])
+			msg := types.NewMsgDeletePermission(subjectAddress, controllerAddress)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

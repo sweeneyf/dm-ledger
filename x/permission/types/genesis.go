@@ -4,18 +4,18 @@ import sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 // GenesisState - all permission state that must be provided at genesis
 type GenesisState struct {
-	AccessControlList []AccessPermission `json:"access_control_list"`
+	AccessControlList []Permission `json:"access_control_list"`
 }
 
 // NewGenesisState - Create a new empty access control list
-func NewGenesisState(accessControlList []AccessPermission) GenesisState {
+func NewGenesisState(accessControlList []Permission) GenesisState {
 	return GenesisState{AccessControlList: nil}
 }
 
 // DefaultGenesisState - default GenesisState used by Cosmos Hub
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
-		AccessControlList: []AccessPermission{},
+		AccessControlList: []Permission{},
 	}
 }
 

@@ -13,12 +13,12 @@ func NewHandler(k Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
-		case MsgRegister:
-			return HandleMsgRegister(ctx, k, msg)
+		case MsgCreatePermission:
+			return HandleMsgCreatePermission(ctx, k, msg)
 		case MsgAccessRequest:
 			return handleMsgAccessRequest(ctx, k, msg)
-		case MsgCreatepermission:
-			return HandleMsgCreatepermission(ctx, k, msg)
+		case MsgDeletePermission:
+			return HandleMsgDeletePermission(ctx, k, msg)
 		// TODO: Define your msg cases
 		//
 		//Example:
@@ -31,23 +31,19 @@ func NewHandler(k Keeper) sdk.Handler {
 	}
 }
 
-// HandleMsgRegister - Handler for Cretaing a permission
-func HandleMsgRegister(ctx sdk.Context, k Keeper, msg MsgRegister) (*sdk.Result, error) {
+// HandleMsgCreatePermission - Handler for Cretaing a permission
+func HandleMsgCreatePermission(ctx sdk.Context, k Keeper, msg MsgCreatePermission) (*sdk.Result, error) {
 
 	//this will create or overwrite the permission registered with the data controller for data subject identified
 	key := msg.Subject.String() + msg.Controller.String()
-	permission := &AccessPermission{
-		Subject:     msg.Subject,
-		Controller:  msg.Controller,
-		DataPointer: msg.DataPointer,
-	}
+	permission := NewPermission(msg.Subject, msg.Controller, msg.DataPointer, msg.DataHash)
 	// save the permission to the permission store
-	k.SetPermission(ctx, key, permission)
+	k.SetPermission(ctx, key, &permission)
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeCreatepermission),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeCreatePermission),
 			sdk.NewAttribute(sdk.AttributeKeySender, msg.Subject.String()),
 			sdk.NewAttribute(types.AttributeController, msg.Controller.String()),
 			sdk.NewAttribute(types.AttributeSubject, msg.Subject.String()),
@@ -57,38 +53,10 @@ func HandleMsgRegister(ctx sdk.Context, k Keeper, msg MsgRegister) (*sdk.Result,
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-// HandleMsgCreatepermission - Handler for Cretaing a permission
-func HandleMsgCreatepermission(ctx sdk.Context, k Keeper, msg MsgCreatepermission) (*sdk.Result, error) {
+// HandleMsgDeletePermission - Handler for deleting a permission
+func HandleMsgDeletePermission(ctx sdk.Context, k Keeper, msg MsgDeletePermission) (*sdk.Result, error) {
 
-	//this will create or overwrite the permission asscoiated with key generated
-	key := msg.Subject.String() + msg.Controller.String() + msg.Processor.String()
-	permission := &AccessPermission{
-		Subject:     msg.Subject,
-		Controller:  msg.Controller,
-		DataPointer: msg.Location,
-	}
-	// save the permission to the permission store
-	k.SetPermission(ctx, key, permission)
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeCreatepermission),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Subject.String()),
-			sdk.NewAttribute(types.AttributeController, msg.Controller.String()),
-			sdk.NewAttribute(types.AttributeSubject, msg.Subject.String()),
-			sdk.NewAttribute(types.AttributeDataPointer, msg.Location),
-			sdk.NewAttribute(types.AttributeAccessType, msg.AccessType),
-			sdk.NewAttribute(types.AttributeReward, msg.Reward.String()),
-		),
-	)
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
-}
-
-// HandleMsgDeletpermission - Handler for deleting a permission
-func HandleMsgDeletpermission(ctx sdk.Context, k Keeper, msg MsgDeletepermission) (*sdk.Result, error) {
-
-	key := msg.Subject.String() + msg.Controller.String() + msg.Processor.String()
+	key := msg.Subject.String() + msg.Controller.String()
 
 	/*
 		permission, _ := k.GetPermission(ctx, key)
@@ -109,11 +77,9 @@ func HandleMsgDeletpermission(ctx sdk.Context, k Keeper, msg MsgDeletepermission
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeDeletepermission),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Processor.String()),
-			sdk.NewAttribute(types.AttributeController, msg.Controller.String()),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeDeletePermission),
 			sdk.NewAttribute(types.AttributeSubject, msg.Subject.String()),
-			sdk.NewAttribute(types.AttributeDataPointer, msg.Location),
+			sdk.NewAttribute(types.AttributeController, msg.Controller.String()),
 		),
 	)
 	return &sdk.Result{Events: ctx.EventManager().Events(), Log: fmt.Sprintf("key is %s", key)}, nil
@@ -132,7 +98,6 @@ func handleMsgAccessRequest(ctx sdk.Context, k Keeper, msg MsgAccessRequest) (*s
 			sdk.NewAttribute(types.AttributeController, msg.Controller.String()),
 			sdk.NewAttribute(types.AttributeSubject, msg.Owner.String()),
 			sdk.NewAttribute(types.AttributeDataPointer, msg.Location),
-			sdk.NewAttribute(types.AttributeAccessType, msg.AccessType),
 			sdk.NewAttribute(types.AttributeReward, msg.Reward.String()),
 		),
 	)

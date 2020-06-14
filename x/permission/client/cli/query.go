@@ -23,15 +23,15 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	permissionQueryCmd.AddCommand(flags.GetCommands(
-		GetCmdGetpermission(storeKey, cdc),
-		GetCmdListpermissions(storeKey, cdc),
+		GetCmdGetPermission(storeKey, cdc),
+		GetCmdListPermissions(storeKey, cdc),
 	)...)
 
 	return permissionQueryCmd
 }
 
-// GetCmdGetpermission queries information about a permission
-func GetCmdGetpermission(queryRoute string, cdc *codec.Codec) *cobra.Command {
+// GetCmdGetPermission queries information about a permission
+func GetCmdGetPermission(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "detail [id]",
 		Short: "gives the detail of a permission",
@@ -40,21 +40,21 @@ func GetCmdGetpermission(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			id := args[0]
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, types.QuerypermissionDetail, id), nil)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, types.QueryPermissionDetail, id), nil)
 			if err != nil {
 				fmt.Printf("could not query permission - %s %v\n", id, err)
 				return nil
 			}
 
-			var out types.QueryRespermission
+			var out types.QueryResPermission
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},
 	}
 }
 
-// GetCmdListpermissions queries a list of all permissions in the system
-func GetCmdListpermissions(queryRoute string, cdc *codec.Codec) *cobra.Command {
+// GetCmdListPermissions queries a list of all permissions in the system
+func GetCmdListPermissions(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "list",
 		Short: "list",
@@ -62,13 +62,13 @@ func GetCmdListpermissions(queryRoute string, cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, types.QuerypermissionList), nil)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, types.QueryPermissionList), nil)
 			if err != nil {
 				fmt.Printf("could not get query permission list\n")
 				return nil
 			}
 
-			var out types.QueryRespermissions
+			var out types.QueryResPermissions
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},

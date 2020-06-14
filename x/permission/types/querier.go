@@ -3,27 +3,27 @@ package types
 import "strings"
 
 const (
-	// QuerypermissionDetail -
-	QuerypermissionDetail = "detail"
-	// QuerypermissionDetail - a list of a access permissions
-	QuerypermissionList = "list"
+	// QueryPermissionDetail -
+	QueryPermissionDetail = "detail"
+	// QueryPermissionList - a list of a access permissions
+	QueryPermissionList = "list"
 )
 
-// QueryRespermission Queries Result Payload for a resolve query
-type QueryRespermission struct {
-	Value AccessPermission `json:"value"`
+// QueryResPermission Queries Result Payload for a resolve query
+type QueryResPermission struct {
+	Value Permission `json:"permission"`
 }
 
 // implement fmt.Stringer
-func (r QueryRespermission) String() string {
+func (r QueryResPermission) String() string {
 	// TODO return r.Value
 	return ""
 }
 
-// QueryRespermissions Queries Result Payload for a permissions query
-type QueryRespermissions []string
+// QueryResPermissions Queries Result Payload for a permissions query
+type QueryResPermissions []string
 
 // implement the fmt.Stringer interface
-func (n QueryRespermissions) String() string {
+func (n QueryResPermissions) String() string {
 	return strings.Join(n[:], "\n")
 }

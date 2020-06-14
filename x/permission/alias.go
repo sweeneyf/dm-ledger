@@ -24,8 +24,9 @@ var (
 	NewGenesisState     = types.NewGenesisState
 	DefaultGenesisState = types.DefaultGenesisState
 	ValidateGenesis     = types.ValidateGenesis
-	// TODO: Fill out function aliases
 
+	// NewPermission - create a new permission
+	NewPermission = types.NewPermission
 	// ModuleCdc -
 	ModuleCdc = types.ModuleCdc
 	// TODO: Fill out variable aliases
@@ -39,17 +40,15 @@ type (
 	// Params -
 	Params = types.Params
 
-	// MsgRegsiter -
-	MsgRegister = types.MsgRegister
 	// MsgAccessRequest -
 	MsgAccessRequest = types.MsgAccessRequest
-	// MsgCreatepermission -
-	MsgCreatepermission = types.MsgCreatepermission
-	// MsgDeletepermission -
-	MsgDeletepermission = types.MsgDeletepermission
+	// MsgCreatePermission -
+	MsgCreatePermission = types.MsgCreatePermission
+	// MsgDeletePermission -
+	MsgDeletePermission = types.MsgDeletePermission
 
-	// AccessPermission -
-	AccessPermission = types.AccessPermission
+	// Permission -
+	Permission = types.Permission
 	// Policy -
 	Policy = types.Policy
 )
