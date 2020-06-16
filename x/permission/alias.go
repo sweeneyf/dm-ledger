@@ -44,6 +44,8 @@ type (
 	MsgAccessRequest = types.MsgAccessRequest
 	// MsgCreatePermission -
 	MsgCreatePermission = types.MsgCreatePermission
+	// MsgUpdatePermission -
+	MsgUpdatePermission = types.MsgUpdatePermission
 	// MsgDeletePermission -
 	MsgDeletePermission = types.MsgDeletePermission
 

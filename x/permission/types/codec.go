@@ -8,6 +8,7 @@ import (
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgAccessRequest{}, "permission/AccessRequest", nil)
 	cdc.RegisterConcrete(MsgCreatePermission{}, "permission/CreatePermission", nil)
+	cdc.RegisterConcrete(MsgUpdatePermission{}, "permission/UpdatePermission", nil)
 	cdc.RegisterConcrete(MsgDeletePermission{}, "permission/DeletePermission", nil)
 }
 

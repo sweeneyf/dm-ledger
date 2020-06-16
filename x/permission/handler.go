@@ -15,15 +15,12 @@ func NewHandler(k Keeper) sdk.Handler {
 		switch msg := msg.(type) {
 		case MsgCreatePermission:
 			return HandleMsgCreatePermission(ctx, k, msg)
+		case MsgUpdatePermission:
+			return HandleMsgUpdatePermission(ctx, k, msg)
 		case MsgAccessRequest:
 			return handleMsgAccessRequest(ctx, k, msg)
 		case MsgDeletePermission:
 			return HandleMsgDeletePermission(ctx, k, msg)
-		// TODO: Define your msg cases
-		//
-		//Example:
-		// case Msg<Action>:
-		// 	return handleMsg<Action>(ctx, k, msg)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", ModuleName, msg)
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
@@ -31,7 +28,7 @@ func NewHandler(k Keeper) sdk.Handler {
 	}
 }
 
-// HandleMsgCreatePermission - Handler for Cretaing a permission
+// HandleMsgCreatePermission - Handler for Creating(registering) a permission
 func HandleMsgCreatePermission(ctx sdk.Context, k Keeper, msg MsgCreatePermission) (*sdk.Result, error) {
 
 	//this will create or overwrite the permission registered with the data controller for data subject identified
@@ -53,25 +50,36 @@ func HandleMsgCreatePermission(ctx sdk.Context, k Keeper, msg MsgCreatePermissio
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
+// HandleMsgUpdatePermission - Handler for grant a  a permission
+func HandleMsgUpdatePermission(ctx sdk.Context, k Keeper, msg MsgUpdatePermission) (*sdk.Result, error) {
+
+	//this will create or overwrite the permission registered with the data controller for data subject identified
+	key := msg.Subject.String() + msg.Controller.String()
+	permission, err := k.GetPermission(ctx, key)
+	if err != nil {
+		return nil, sdkerrors.Wrap(types.ErrPermissionDoesNotExist, "Cannot locate permission ") // If not, throw an error
+	}
+
+	permission.Policy.UpdatePolicy(msg.Processor, msg.Create, msg.Read, msg.Update, msg.Delete)
+	// save the permission to the permission store
+	k.SetPermission(ctx, key, permission)
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeyAction, types.EventTypeUpdatePermission),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Subject.String()),
+			sdk.NewAttribute(types.AttributeController, msg.Controller.String()),
+			sdk.NewAttribute(types.AttributeSubject, msg.Subject.String()),
+		),
+	)
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+}
+
 // HandleMsgDeletePermission - Handler for deleting a permission
 func HandleMsgDeletePermission(ctx sdk.Context, k Keeper, msg MsgDeletePermission) (*sdk.Result, error) {
 
 	key := msg.Subject.String() + msg.Controller.String()
-
-	/*
-		permission, _ := k.GetPermission(ctx, key)
-		if permission == nil {
-			return nil, sdkerrors.Wrap(types.ErrpermissionDoesNotExist, key)
-		}
-		// now remove that dataset if it exists
-		if err := permission.RemoveDataset(msg.Location, "TODO Change this to encrKey"); err != nil {
-			return nil, sdkerrors.Wrap(types.ErrpermissionDoesNotExist, msg.Location)
-		}
-
-		// if there are no more datasets then delete the whole permission from the store
-		if len(permission.Datasets) == 0 {
-			k.DeletePermission(ctx, key)
-		} */
 	k.DeletePermission(ctx, key)
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

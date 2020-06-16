@@ -9,12 +9,13 @@ import (
 )
 
 // RegisterRoutes registers permission-related REST handlers to a router
-func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, moduleName string) {
+func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
 
 	//tx routes
-	r.HandleFunc(fmt.Sprintf("/%s/register", moduleName), registerHandler(cliCtx)).Methods("Post")
+	r.HandleFunc(fmt.Sprintf("/permissions"), registerHandler(cliCtx)).Methods("POST")
 
 	//query routes
-	//r.HandleFunc(fmt.Sprintf("/%s/register", moduleName), registerHandler(cliCtx)).Methods("Post")
+	// Get a list of all permissions
+	r.HandleFunc(fmt.Sprintf("/permissions"), registerHandler(cliCtx)).Methods("GET")
 
 }

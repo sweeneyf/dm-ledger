@@ -3,6 +3,7 @@ package types
 // permission module event types
 const (
 	EventTypeCreatePermission = "CreatePermission"
+	EventTypeUpdatePermission = "UpdatePermission"
 	EventTypeDeletePermission = "DeletePermission"
 	EventTypeAccessRequest    = "AccessRequest"
 

@@ -32,7 +32,7 @@ const DeletePermissionConst = "DeletePermission"
 func (msg MsgDeletePermission) Route() string { return RouterKey }
 
 // Type - returns the message type as defined by AccessRequestConst
-func (msg MsgDeletePermission) Type() string { return AccessRequestConst }
+func (msg MsgDeletePermission) Type() string { return DeletePermissionConst }
 
 // GetSigners - returns the address of the signers that must sign, in this case the data subject
 func (msg MsgDeletePermission) GetSigners() []sdk.AccAddress {

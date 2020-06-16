@@ -22,7 +22,7 @@ type Policy struct {
 	Delete []sdk.AccAddress `json:"delete"`
 }
 
-// NewPermission creates a new MsgCreatePermission instance
+// NewPermission creates a new Permission instance
 func NewPermission(subject sdk.AccAddress, controller sdk.AccAddress, dataPointer string, dataHash string) Permission {
 	return Permission{
 		Subject:     subject,
@@ -41,4 +41,35 @@ func NewPolicy(subject sdk.AccAddress) Policy {
 		Update: []sdk.AccAddress{subject},
 		Delete: []sdk.AccAddress{subject},
 	}
+}
+
+// UpdatePolicy - returns a policy intialised with just accessed granted to the subject
+func (p *Policy) UpdatePolicy(processor sdk.AccAddress, create, read, update, delete bool) {
+	p.Create = updateAccList(p.Create, processor, create)
+	p.Read = updateAccList(p.Read, processor, read)
+	p.Update = updateAccList(p.Update, processor, update)
+	p.Delete = updateAccList(p.Delete, processor, delete)
+
+}
+
+// UpdateAccList takes a accList of SDk addresses and checks if an address is there
+// depending on whther the adress is required it is added or deleted
+func updateAccList(accList []sdk.AccAddress, acc sdk.AccAddress, required bool) []sdk.AccAddress {
+	// first look for the item
+	found := false
+	for i, item := range accList {
+		if item.String() == acc.String() {
+			found = true
+			if required == false { // thern we need to delete it
+				accList[i] = accList[len(accList)-1] // Copy last element to index i.
+				accList[len(accList)-1] = nil        // Erase last element (write zero value).
+				accList = accList[:len(accList)-1]
+			}
+			break
+		}
+	}
+	if !found && required == true { // then we need to add it
+		accList = append(accList, acc)
+	}
+	return accList
 }

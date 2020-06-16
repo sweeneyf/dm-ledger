@@ -14,7 +14,7 @@ import (
 	"github.com/sweeneyf/dm-ledger/x/permission/types"
 )
 
-type registerReq struct {
+type createPermissionReq struct {
 	BaseReq     rest.BaseReq `json:"base_req"`
 	Subject     string       `json:"subject"`
 	Controller  string       `json:"controller"`
@@ -24,7 +24,7 @@ type registerReq struct {
 
 func registerHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req registerReq
+		var req createPermissionReq
 
 		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
