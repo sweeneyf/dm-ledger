@@ -57,31 +57,29 @@ func (s *permissionSuite) SetupSuite() {
 	_ = s.Cms.LoadLatestVersion()
 }
 
+func (s *permissionSuite) SetupTest() {
+	_ = s.Cms.LoadLatestVersion()
+}
+
 func (s *permissionSuite) TestHandleMsgCreatePermissionSuccessful() {
 	msgCreatePermission := types.NewMsgCreatePermission(s.DS1, s.DC1, "data Location", "data hash")
 
 	res, err := permission.HandleMsgCreatePermission(s.Ctx, s.Keeper, msgCreatePermission)
 
-	resultEvent := res.Events[0]
+	resultEvent := res.Events[len(res.Events)-1] // get the latest event
 	// now check the event to verify that the permission was created successfully.
 	s.Require().Nil(err)
-	s.Require().Equal(8, len(resultEvent.Attributes))
+	s.Require().Equal(4, len(resultEvent.Attributes))
 	for _, attrib := range resultEvent.Attributes {
 		switch string(attrib.GetKey()) {
 		case sdk.AttributeKeyModule:
 			s.Require().Equal(types.AttributeValueCategory, string(attrib.GetValue()))
 		case sdk.AttributeKeyAction:
 			s.Require().Equal(types.EventTypeCreatePermission, string(attrib.GetValue()))
-		case sdk.AttributeKeySender:
-			s.Require().Equal(msgCreatePermission.Subject.String(), string(attrib.GetValue()))
 		case types.AttributeController:
 			s.Require().Equal(msgCreatePermission.Controller.String(), string(attrib.GetValue()))
 		case types.AttributeSubject:
 			s.Require().Equal(msgCreatePermission.Subject.String(), string(attrib.GetValue()))
-		case types.AttributeDataPointer:
-			s.Require().Equal(msgCreatePermission.DataPointer, string(attrib.GetValue()))
-		case types.AttributeDataHash:
-			s.Require().Equal(msgCreatePermission.DataHash, string(attrib.GetValue()))
 		default:
 			s.Require().Fail(fmt.Sprintf("we have a non expected attribute type '%v'", string(attrib.GetKey())))
 		}
@@ -171,7 +169,7 @@ func (s *permissionSuite) TestHandleMsgDeletePermissionSuccessful() {
 	msgDeletePermission := types.NewMsgDeletePermission(s.DS1, s.DC1)
 	res, err := permission.HandleMsgDeletePermission(s.Ctx, s.Keeper, msgDeletePermission)
 
-	resultEvent := res.Events[0]
+	resultEvent := res.Events[len(res.Events)-1] // get the latest event
 	// now check the event to verify that the permission was created successfully.
 	s.Require().Nil(err)
 	s.Require().NotNil(res)
@@ -192,33 +190,34 @@ func (s *permissionSuite) TestHandleMsgDeletePermissionSuccessful() {
 	}
 }
 
-/*
-func (s *permissionSuite) TestHandleMsgDeletePermissionSuccessful() {
+func (s *permissionSuite) TestHandleMsgAccessRequestSuccessful() {
 	// create a test permission
-	key := msgCreatePermission.Subject.String() + msgCreatePermission.Controller.String() + msgCreatePermission.Processor.String()
-	testpermissionToInsert := &permission.Permission{
-		Subject:    s.DS1,
-		Controller: s.DC1,
-		Processor:  s.DP1,
-		GDPRData: permission.GDPRData{
-			Location: "Location",
-			EncrKey:  "TODO Change this to encrKey",
-			Policy:   permission.Policy{AccessType: "Read"},
-		},
-	}
+	testPermission := permission.NewPermission(s.DS1, s.DC1, "data_pointer", "data_hash")
+	//now add in all rights for user DP1
+	testPermission.Policy.Create = append(testPermission.Policy.Create, s.DP1)
+	testPermission.Policy.Read = append(testPermission.Policy.Read, s.DP1)
+	testPermission.Policy.Update = append(testPermission.Policy.Update, s.DP1)
+	key := testPermission.Subject.String() + testPermission.Controller.String()
+
 	// save the permission to the permission store
-	s.Keeper.SetPermission(s.Ctx, key, testpermissionToInsert)
+	s.Keeper.SetPermission(s.Ctx, key, &testPermission)
 
-	msgDeletePermission := types.NewMsgDeletePermission(s.DS1, s.DC1, s.DP1, "Location")
-	_, err := permission.HandleMsgDeletePermission(s.Ctx, s.Keeper, msgDeletePermission)
+	// update permission removing the last delete permission for DP1
+	msgAccessRequest := types.NewMsgAccessRequest(s.DS1, s.DC1, s.DP1, nil)
+	result, err := permission.HandleMsgAccessRequest(s.Ctx, s.Keeper, msgAccessRequest)
 
-	// try and retrieve it again to make sure it is deleted
-	deletedpermission, _ = s.Keeper.GetPermission(s.Ctx, key)
+	// get the accessgRant returned from result
+	var accGrant permission.AccessGrant
+	err = s.Cdc.UnmarshalBinaryLengthPrefixed(result.Data, &accGrant)
 
 	s.Require().Nil(err)
-	s.Require().Nil(deletedpermission)
+	s.Require().NotNil(accGrant)
+	s.Require().Equal(true, accGrant.Create)
+	s.Require().Equal(true, accGrant.Read)
+	s.Require().Equal(true, accGrant.Update)
+	s.Require().Equal(false, accGrant.Delete)
 }
-*/
+
 func TestSuite(t *testing.T) {
 	// This is what actually runs our suite
 	suite.Run(t, new(permissionSuite))

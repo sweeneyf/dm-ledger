@@ -12,22 +12,18 @@ var _ sdk.Msg = &MsgAccessRequest{}
 
 // MsgAccessRequest - struct for unjailing jailed validator
 type MsgAccessRequest struct {
-	Requestor  sdk.AccAddress `json:"requestor" yaml:"requestor"`   // address of the service provider requesting access (SP)
-	Owner      sdk.AccAddress `json:"owner" yaml:"owner"`           // address of the owner of the data ~(data subject DS)
+	Subject    sdk.AccAddress `json:"subject" yaml:"subject"`       // address of the owner of the data ~(data subject DS)
 	Controller sdk.AccAddress `json:"controller" yaml:"controller"` // address of the controller of the data (DC)
-	AccessType string         `json:"accessType" yaml:"accessType"` // what type of access read/write/delete
-	Location   string         `json:"location" yaml:"location"`     // pointer to location of data being accessed
-	Reward     sdk.Coins      `json:"reward" yaml:"reward"`         // reward for allowing access
+	Processor  sdk.AccAddress `json:"processor" yaml:"processor"`   // address of the data processor requesting access (DP)
+	Reward     sdk.Coins      `json:"reward" yaml:"reward"`         // optional reward for allowing access
 }
 
 // NewMsgAccessRequest creates a new MsgAccessRequest instance
-func NewMsgAccessRequest(requestor sdk.AccAddress, owner sdk.AccAddress, controller sdk.AccAddress, accessType, location string, reward sdk.Coins) MsgAccessRequest {
+func NewMsgAccessRequest(subject sdk.AccAddress, controller sdk.AccAddress, processor sdk.AccAddress, reward sdk.Coins) MsgAccessRequest {
 	return MsgAccessRequest{
-		Requestor:  requestor,
-		Owner:      owner,
+		Subject:    subject,
 		Controller: controller,
-		AccessType: accessType,
-		Location:   location,
+		Processor:  processor,
 		Reward:     reward,
 	}
 }
@@ -43,7 +39,7 @@ func (msg MsgAccessRequest) Type() string { return AccessRequestConst }
 
 // GetSigners - returns the address of the signers that must sign, in this case te access requestors
 func (msg MsgAccessRequest) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{sdk.AccAddress(msg.Requestor)}
+	return []sdk.AccAddress{sdk.AccAddress(msg.Processor)}
 }
 
 // GetSignBytes defines hopw the message gets encoded for signing, in this case marshall to sorted JSON
@@ -54,17 +50,14 @@ func (msg MsgAccessRequest) GetSignBytes() []byte {
 
 // ValidateBasic is used to provide some basic stateless checks on the validity of the message
 func (msg MsgAccessRequest) ValidateBasic() error {
-	if msg.Requestor.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "requestor cannot be empty")
+	if msg.Processor.Empty() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "processor cannot be empty")
 	}
-	if msg.Owner.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "owner cannot be empty")
+	if msg.Subject.Empty() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "subject cannot be empty")
 	}
 	if msg.Controller.Empty() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "controller cannot be empty")
-	}
-	if msg.Location == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "data location cannot empty")
 	}
 	return nil
 }

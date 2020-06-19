@@ -8,7 +8,7 @@ dald init dl-node1 --chain-id permission-ledger
 
 # Configure your CLI to eliminate need to declare them as flags
 # first line tells cli to interact with the correct node access-ledger
-dalcli config chain-id access-ledger
+dalcli config chain-id permission-ledger
 dalcli config output json
 dalcli config indent true
 dalcli config trust-node true
@@ -50,7 +50,7 @@ dald validate-genesis
 dalcli query account $(dalcli keys show dc1 -a)
 
 #Create a permission
- dalcli tx permission create $(dalcli keys show ds2 -a) $(dalcli keys show dc1 -a) data-location data-hash  --from $(dalcli keys show ds2 -a)
+ dalcli tx permission create $(dalcli keys show ds1 -a) $(dalcli keys show dc1 -a) data-location data-hash  --from $(dalcli keys show ds1 -a)
 
 #Delete a permission
 dalcli tx permission delete $(dalcli keys show ds1 -a) $(dalcli keys show dc1 -a) --from ds1

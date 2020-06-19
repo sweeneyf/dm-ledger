@@ -1,6 +1,8 @@
 package types
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -52,24 +54,40 @@ func (p *Policy) UpdatePolicy(processor sdk.AccAddress, create, read, update, de
 
 }
 
+// FindAccInACL takes a accList of SDk addresses and checks if an address is there
+func FindAccInACL(accList []sdk.AccAddress, acc sdk.AccAddress) (pos int) {
+	for i, item := range accList {
+		if item.String() == acc.String() {
+			return i
+		}
+	}
+	return -1
+}
+
 // UpdateAccList takes a accList of SDk addresses and checks if an address is there
 // depending on whther the adress is required it is added or deleted
 func updateAccList(accList []sdk.AccAddress, acc sdk.AccAddress, required bool) []sdk.AccAddress {
-	// first look for the item
-	found := false
-	for i, item := range accList {
-		if item.String() == acc.String() {
-			found = true
-			if required == false { // thern we need to delete it
-				accList[i] = accList[len(accList)-1] // Copy last element to index i.
-				accList[len(accList)-1] = nil        // Erase last element (write zero value).
-				accList = accList[:len(accList)-1]
-			}
-			break
+	pos := FindAccInACL(accList, acc)
+	if pos > 0 { // then its found
+		if !required { // thern we need to delete it
+			accList[pos] = accList[len(accList)-1] // Copy last element to index i.
+			accList[len(accList)-1] = nil          // Erase last element (write zero value).
+			accList = accList[:len(accList)-1]
+		}
+	} else {
+		if required { // then we need to add it
+			accList = append(accList, acc)
 		}
 	}
-	if !found && required == true { // then we need to add it
-		accList = append(accList, acc)
-	}
 	return accList
+}
+
+// AccessGrant is the result of the Access Request
+type AccessGrant struct {
+	Token   string    `json:"token"`
+	Expires time.Time `json:"expires"`
+	Create  bool      `json:"create"`
+	Read    bool      `json:"read"`
+	Update  bool      `json:"update"`
+	Delete  bool      `json:"delete"`
 }

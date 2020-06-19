@@ -30,11 +30,11 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-// GetPermission returns the access control record
+// GetPermission returns the permission record
 func (k Keeper) GetPermission(ctx sdk.Context, key string) (*types.Permission, error) {
 	store := ctx.KVStore(k.storeKey)
 	var item types.Permission
-	byteKey := []byte(key)
+	byteKey := []byte(types.PermissionPrefix + key)
 	err := k.cdc.UnmarshalBinaryLengthPrefixed(store.Get(byteKey), &item)
 	if err != nil {
 		return nil, err
@@ -46,17 +46,48 @@ func (k Keeper) GetPermission(ctx sdk.Context, key string) (*types.Permission, e
 func (k Keeper) SetPermission(ctx sdk.Context, key string, value *types.Permission) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(*value)
-	store.Set([]byte(key), bz)
+	store.Set([]byte(types.PermissionPrefix+key), bz)
 }
 
 // DeletePermission deletes the permission
 func (k Keeper) DeletePermission(ctx sdk.Context, key string) {
 	store := ctx.KVStore(k.storeKey)
-	store.Delete([]byte(key))
+	store.Delete([]byte(types.PermissionPrefix + key))
 }
 
 // GetPermissionsIterator - Get an iterator over all permissions in which the keys
 func (k Keeper) GetPermissionsIterator(ctx sdk.Context) sdk.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, nil)
+	return sdk.KVStorePrefixIterator(store, []byte(types.PermissionPrefix))
+}
+
+// GetAccessGrant returns the permission record
+func (k Keeper) GetAccessGrant(ctx sdk.Context, key string) (*types.AccessGrant, error) {
+	store := ctx.KVStore(k.storeKey)
+	var item types.AccessGrant
+	byteKey := []byte(types.AccessGrantPrefix + key)
+	err := k.cdc.UnmarshalBinaryLengthPrefixed(store.Get(byteKey), &item)
+	if err != nil {
+		return nil, err
+	}
+	return &item, nil
+}
+
+// SetAccessGrant inserts or overwrites the accessToken
+func (k Keeper) SetAccessGrant(ctx sdk.Context, key string, value *types.AccessGrant) {
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshalBinaryLengthPrefixed(*value)
+	store.Set([]byte(types.AccessGrantPrefix+key), bz)
+}
+
+// DeleteAccessToken deletes the permission
+func (k Keeper) DeleteAccessToken(ctx sdk.Context, key string) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete([]byte(types.AccessGrantPrefix + key))
+}
+
+// GetAccessGrantIterator - Get an iterator over all acessGrants
+func (k Keeper) GetAccessGrantIterator(ctx sdk.Context) sdk.Iterator {
+	store := ctx.KVStore(k.storeKey)
+	return sdk.KVStorePrefixIterator(store, []byte(types.AccessGrantPrefix))
 }

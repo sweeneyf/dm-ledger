@@ -62,9 +62,10 @@ func GetCmdListPermissions(queryRoute string, cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, types.QueryPermissionList), nil)
+			fullQueryRoute := fmt.Sprintf("custom/%s/%s", queryRoute, types.QueryPermissionList)
+			res, _, err := cliCtx.QueryWithData(fullQueryRoute, nil)
 			if err != nil {
-				fmt.Printf("could not get query permission list\n")
+				fmt.Printf("could not get query permission list full route is %s - error is %v\n ", fullQueryRoute, err)
 				return nil
 			}
 

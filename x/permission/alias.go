@@ -27,6 +27,7 @@ var (
 
 	// NewPermission - create a new permission
 	NewPermission = types.NewPermission
+	FindAccInACL  = types.FindAccInACL
 	// ModuleCdc -
 	ModuleCdc = types.ModuleCdc
 	// TODO: Fill out variable aliases
@@ -53,4 +54,7 @@ type (
 	Permission = types.Permission
 	// Policy -
 	Policy = types.Policy
+
+	// AccessGrant is the result of the Access Request
+	AccessGrant = types.AccessGrant
 )

@@ -29,13 +29,13 @@ func NewMsgCreatePermission(subject sdk.AccAddress, controller sdk.AccAddress, d
 	}
 }
 
-// CreateConst is Registration Constant
-const CreatePermissionConst = "Create"
+// CreatePermissionConst is Registration Constant
+const CreatePermissionConst = "CreatePermission"
 
 // Route Returns a human-readable string for the message, intended to be the name of the module
 func (msg MsgCreatePermission) Route() string { return RouterKey }
 
-// Type - returns the message type as defined by AccessRequestConst
+// Type - returns the message type as defined by CreatePermissionConst
 func (msg MsgCreatePermission) Type() string { return CreatePermissionConst }
 
 // GetSigners - returns the address of the signers that must sign, in this case the data subject

@@ -115,7 +115,7 @@ func GetCmdUpdatePermission(cdc *codec.Codec) *cobra.Command {
 // GetCmdRequestAcess is the CLI command for requesting access
 func GetCmdRequestAcess(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "request-access [data-subject] [data-controller]",
+		Use:   "request-access [data-subject] [data-controller] [data-processor]",
 		Short: "request access to a subjects data with a particlular controller",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -129,7 +129,20 @@ func GetCmdRequestAcess(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAccessRequest(cliCtx.GetFromAddress(), cliCtx.GetFromAddress(), cliCtx.GetFromAddress(), args[2], args[3], coins)
+			subjectAddress, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+			controllerAddress, err := sdk.AccAddressFromBech32(args[1])
+			if err != nil {
+				return err
+			}
+			processorAddress, err := sdk.AccAddressFromBech32(args[2])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgAccessRequest(subjectAddress, controllerAddress, processorAddress, coins)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
