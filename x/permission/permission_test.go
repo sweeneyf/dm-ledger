@@ -190,34 +190,6 @@ func (s *permissionSuite) TestHandleMsgDeletePermissionSuccessful() {
 	}
 }
 
-func (s *permissionSuite) TestHandleMsgAccessRequestSuccessful() {
-	// create a test permission
-	testPermission := permission.NewPermission(s.DS1, s.DC1, "data_pointer", "data_hash")
-	//now add in all rights for user DP1
-	testPermission.Policy.Create = append(testPermission.Policy.Create, s.DP1)
-	testPermission.Policy.Read = append(testPermission.Policy.Read, s.DP1)
-	testPermission.Policy.Update = append(testPermission.Policy.Update, s.DP1)
-	key := testPermission.Subject.String() + testPermission.Controller.String()
-
-	// save the permission to the permission store
-	s.Keeper.SetPermission(s.Ctx, key, &testPermission)
-
-	// update permission removing the last delete permission for DP1
-	msgAccessRequest := types.NewMsgAccessRequest(s.DS1, s.DC1, s.DP1, nil)
-	result, err := permission.HandleMsgAccessRequest(s.Ctx, s.Keeper, msgAccessRequest)
-
-	// get the accessgRant returned from result
-	var accGrant permission.AccessGrant
-	err = s.Cdc.UnmarshalBinaryLengthPrefixed(result.Data, &accGrant)
-
-	s.Require().Nil(err)
-	s.Require().NotNil(accGrant)
-	s.Require().Equal(true, accGrant.Create)
-	s.Require().Equal(true, accGrant.Read)
-	s.Require().Equal(true, accGrant.Update)
-	s.Require().Equal(false, accGrant.Delete)
-}
-
 func TestSuite(t *testing.T) {
 	// This is what actually runs our suite
 	suite.Run(t, new(permissionSuite))

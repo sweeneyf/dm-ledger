@@ -2,7 +2,7 @@ package types
 
 const (
 	// ModuleName is the name of the module
-	ModuleName = "permission"
+	ModuleName = "grant"
 
 	// StoreKey to be used when creating the KVStore
 	StoreKey = ModuleName

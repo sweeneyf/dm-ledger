@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 
+	"github.com/sweeneyf/dm-ledger/x/grant"
 	"github.com/sweeneyf/dm-ledger/x/permission"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -49,6 +50,7 @@ var (
 		supply.AppModuleBasic{},
 
 		permission.AppModule{},
+		grant.AppModule{},
 	)
 	// account permissions
 	maccPerms = map[string][]string{
@@ -91,6 +93,7 @@ type dataManagementApp struct {
 	supplyKeeper     supply.Keeper
 	paramsKeeper     params.Keeper
 	permissionKeeper permission.Keeper
+	grantKeeper      grant.Keeper
 
 	// Module Manager
 	mm *module.Manager
@@ -116,7 +119,7 @@ func NewDataManagementApp(
 	bApp.SetAppVersion(version.Version)
 
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
-		supply.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey, permission.StoreKey)
+		supply.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey, permission.StoreKey, grant.StoreKey)
 
 	tkeys := sdk.NewTransientStoreKeys(params.TStoreKey)
 
@@ -195,11 +198,18 @@ func NewDataManagementApp(
 			app.slashingKeeper.Hooks()),
 	)
 
-	// The permissionKeeper is the Keeper from the module for this tutorial
-	// It handles interactions with the namestore
+	// The permissionKeeper is the Keeper from the permissions module
 	app.permissionKeeper = permission.NewKeeper(
 		app.cdc,
 		keys[permission.StoreKey],
+	)
+
+	// The permissionKeeper is the Keeper from the permissions module
+	app.grantKeeper = grant.NewKeeper(
+		app.cdc,
+		keys[grant.StoreKey],
+		app.permissionKeeper,
+		app.bankKeeper,
 	)
 
 	app.mm = module.NewManager(

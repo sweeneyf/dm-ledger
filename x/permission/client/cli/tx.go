@@ -28,7 +28,6 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	permissionTxCmd.AddCommand(flags.PostCommands(
-		GetCmdRequestAcess(cdc),
 		GetCmdCreatePermission(cdc),
 		GetCmdUpdatePermission(cdc),
 		GetCmdDeletePermission(cdc),
@@ -102,47 +101,6 @@ func GetCmdUpdatePermission(cdc *codec.Codec) *cobra.Command {
 			deleteRequired := strings.ContainsAny(permissionArgs, "d")
 
 			msg := types.NewMsgUpdatePermission(subjectAddress, controllerAddress, processorAddress, createRequired, readRequired, updateRequired, deleteRequired)
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
-		},
-	}
-}
-
-// GetCmdRequestAcess is the CLI command for requesting access
-func GetCmdRequestAcess(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "request-access [data-subject] [data-controller] [data-processor]",
-		Short: "request access to a subjects data with a particlular controller",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			inBuf := bufio.NewReader(cmd.InOrStdin())
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
-
-			coins, err := sdk.ParseCoins(args[1])
-			if err != nil {
-				return err
-			}
-
-			subjectAddress, err := sdk.AccAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
-			controllerAddress, err := sdk.AccAddressFromBech32(args[1])
-			if err != nil {
-				return err
-			}
-			processorAddress, err := sdk.AccAddressFromBech32(args[2])
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgAccessRequest(subjectAddress, controllerAddress, processorAddress, coins)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

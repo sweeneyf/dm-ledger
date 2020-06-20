@@ -1,8 +1,8 @@
-package permission
+package grant
 
 import (
-	"github.com/sweeneyf/dm-ledger/x/permission/keeper"
-	"github.com/sweeneyf/dm-ledger/x/permission/types"
+	"github.com/sweeneyf/dm-ledger/x/grant/keeper"
+	"github.com/sweeneyf/dm-ledger/x/grant/types"
 )
 
 // The main reason for having this file is to prevent import cycles
@@ -25,8 +25,6 @@ var (
 	DefaultGenesisState = types.DefaultGenesisState
 	ValidateGenesis     = types.ValidateGenesis
 
-	// NewPermission - create a new permission
-	NewPermission = types.NewPermission
 	// ModuleCdc -
 	ModuleCdc = types.ModuleCdc
 	// TODO: Fill out variable aliases
@@ -40,15 +38,9 @@ type (
 	// Params -
 	Params = types.Params
 
-	// MsgCreatePermission -
-	MsgCreatePermission = types.MsgCreatePermission
-	// MsgUpdatePermission -
-	MsgUpdatePermission = types.MsgUpdatePermission
-	// MsgDeletePermission -
-	MsgDeletePermission = types.MsgDeletePermission
+	// MsgRequestAccess -
+	MsgRequestAccess = types.MsgRequestAccess
 
-	// Permission -
-	Permission = types.Permission
-	// Policy -
-	Policy = types.Policy
+	// Grant is the result of the Access Request
+	Grant = types.Grant
 )

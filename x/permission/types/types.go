@@ -1,8 +1,6 @@
 package types
 
 import (
-	"time"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -47,15 +45,15 @@ func NewPolicy(subject sdk.AccAddress) Policy {
 
 // UpdatePolicy - returns a policy intialised with just accessed granted to the subject
 func (p *Policy) UpdatePolicy(processor sdk.AccAddress, create, read, update, delete bool) {
-	p.Create = updateAccList(p.Create, processor, create)
-	p.Read = updateAccList(p.Read, processor, read)
-	p.Update = updateAccList(p.Update, processor, update)
-	p.Delete = updateAccList(p.Delete, processor, delete)
+	p.Create = p.updateAccList(p.Create, processor, create)
+	p.Read = p.updateAccList(p.Read, processor, read)
+	p.Update = p.updateAccList(p.Update, processor, update)
+	p.Delete = p.updateAccList(p.Delete, processor, delete)
 
 }
 
 // FindAccInACL takes a accList of SDk addresses and checks if an address is there
-func FindAccInACL(accList []sdk.AccAddress, acc sdk.AccAddress) (pos int) {
+func (p *Policy) FindAccInACL(accList []sdk.AccAddress, acc sdk.AccAddress) (pos int) {
 	for i, item := range accList {
 		if item.String() == acc.String() {
 			return i
@@ -66,8 +64,8 @@ func FindAccInACL(accList []sdk.AccAddress, acc sdk.AccAddress) (pos int) {
 
 // UpdateAccList takes a accList of SDk addresses and checks if an address is there
 // depending on whther the adress is required it is added or deleted
-func updateAccList(accList []sdk.AccAddress, acc sdk.AccAddress, required bool) []sdk.AccAddress {
-	pos := FindAccInACL(accList, acc)
+func (p *Policy) updateAccList(accList []sdk.AccAddress, acc sdk.AccAddress, required bool) []sdk.AccAddress {
+	pos := p.FindAccInACL(accList, acc)
 	if pos > 0 { // then its found
 		if !required { // thern we need to delete it
 			accList[pos] = accList[len(accList)-1] // Copy last element to index i.
@@ -80,14 +78,4 @@ func updateAccList(accList []sdk.AccAddress, acc sdk.AccAddress, required bool) 
 		}
 	}
 	return accList
-}
-
-// AccessGrant is the result of the Access Request
-type AccessGrant struct {
-	Token   string    `json:"token"`
-	Expires time.Time `json:"expires"`
-	Create  bool      `json:"create"`
-	Read    bool      `json:"read"`
-	Update  bool      `json:"update"`
-	Delete  bool      `json:"delete"`
 }

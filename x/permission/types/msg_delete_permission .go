@@ -31,7 +31,7 @@ const DeletePermissionConst = "DeletePermission"
 // Route Returns a human-readable string for the message, intended to be the name of the module
 func (msg MsgDeletePermission) Route() string { return RouterKey }
 
-// Type - returns the message type as defined by AccessRequestConst
+// Type - returns the message type as defined by RequestAccessConst
 func (msg MsgDeletePermission) Type() string { return DeletePermissionConst }
 
 // GetSigners - returns the address of the signers that must sign, in this case the data subject
