@@ -204,7 +204,7 @@ func NewDataManagementApp(
 		keys[permission.StoreKey],
 	)
 
-	// The permissionKeeper is the Keeper from the permissions module
+	// The grantKeeper is the Keeper from the grant module
 	app.grantKeeper = grant.NewKeeper(
 		app.cdc,
 		keys[grant.StoreKey],
@@ -216,7 +216,8 @@ func NewDataManagementApp(
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
 		auth.NewAppModule(app.accountKeeper),
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
-		permission.NewAppModule(app.permissionKeeper, app.bankKeeper),
+		permission.NewAppModule(app.permissionKeeper),
+		grant.NewAppModule(app.grantKeeper, app.permissionKeeper, app.bankKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
 		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.stakingKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.stakingKeeper),
@@ -236,6 +237,7 @@ func NewDataManagementApp(
 		bank.ModuleName,
 		slashing.ModuleName,
 		permission.ModuleName,
+		grant.ModuleName,
 		supply.ModuleName,
 		genutil.ModuleName,
 	)

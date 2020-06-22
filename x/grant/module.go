@@ -12,10 +12,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/sweeneyf/dm-ledger/x/grant/client/cli"
 	"github.com/sweeneyf/dm-ledger/x/grant/client/rest"
-	"github.com/sweeneyf/dm-ledger/x/permission"
+	"github.com/sweeneyf/dm-ledger/x/grant/types"
 )
 
 // Type check to ensure the interface is properly implemented
@@ -74,12 +73,12 @@ func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 	keeper           Keeper
-	permissionKeeper permission.Keeper
-	bankKeeper       bank.Keeper
+	permissionKeeper types.PermissionKeeper
+	bankKeeper       types.BankKeeper
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(k Keeper, permissionKeeper permission.Keeper, bankKeeper bank.Keeper) AppModule {
+func NewAppModule(k Keeper, permissionKeeper types.PermissionKeeper, bankKeeper types.BankKeeper) AppModule {
 	return AppModule{
 		AppModuleBasic:   AppModuleBasic{},
 		keeper:           k,

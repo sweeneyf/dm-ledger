@@ -18,7 +18,7 @@ import (
 
 // GetTxCmd returns the transaction commands for this module
 func GetTxCmd(cdc *codec.Codec) *cobra.Command {
-	permissionTxCmd := &cobra.Command{
+	grantTxCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      fmt.Sprintf("%s transactions subcommands", types.ModuleName),
 		DisableFlagParsing:         true,
@@ -26,29 +26,25 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	permissionTxCmd.AddCommand(flags.PostCommands(
+	grantTxCmd.AddCommand(flags.PostCommands(
 		GetCmdRequestAcess(cdc),
+		GetCmdValidateToken(cdc),
 	)...)
 
-	return permissionTxCmd
+	return grantTxCmd
 }
 
 // GetCmdRequestAcess is the CLI command for requesting grant
 func GetCmdRequestAcess(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "request-grant [data-subject] [data-controller] [data-processor]",
+		Use:   "request [data-subject] [data-controller] [data-processor]",
 		Short: "request grant to a subjects data with a particlular controller",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
-
-			coins, err := sdk.ParseCoins(args[1])
-			if err != nil {
-				return err
-			}
 
 			subjectAddress, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
@@ -63,7 +59,42 @@ func GetCmdRequestAcess(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
+			coins, err := sdk.ParseCoins(args[3])
+			if err != nil {
+				return err
+			}
+
 			msg := types.NewMsgRequestAccess(subjectAddress, controllerAddress, processorAddress, coins)
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+}
+
+// GetCmdValidateToken is the CLI command for requesting grant
+func GetCmdValidateToken(cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "validate [service provider] [token] ",
+		Short: "validae a grant by token",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
+
+			serviceProvider, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			token := args[1]
+
+			msg := types.NewMsgValidateToken(serviceProvider, token)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

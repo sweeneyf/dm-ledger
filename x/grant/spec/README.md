@@ -1,4 +1,4 @@
-# permission module specification
+# grant module specification
 
 ## Abstract
 

@@ -21,7 +21,7 @@ type BankKeeper interface {
 	SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, amt sdk.Coins) error
 }
 
-// PermissionKeeper - need to be able to gte the permisison details from the permission keeper
+// PermissionKeeper - need to be able to get the permisison details from the permission keeper
 type PermissionKeeper interface {
 	GetPermission(ctx sdk.Context, key string) (*perm.Permission, error)
 }

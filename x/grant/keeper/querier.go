@@ -16,23 +16,17 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err error) {
 		switch path[0] {
 		case types.QueryGrantDetail:
-			return getPermission(ctx, path[1:], req, keeper)
+			return getGrant(ctx, path[1:], req, keeper)
 		case types.QueryGrantList:
-			return listPermissions(ctx, req, keeper)
+			return listGrants(ctx, req, keeper)
 		default:
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "unknown grant grant query endpoint -"+path[0])
 		}
 	}
 }
 
-// removePrefixFromKey removes the prefix from the key
-func removePrefixFromKey(key []byte, prefix []byte) (hash []byte) {
-	hash = key[len(prefix):]
-	return hash
-}
-
 // nolint: unparam
-func getPermission(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
+func getGrant(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	value, err := keeper.GetGrant(ctx, path[0])
 
 	if err != nil {
@@ -47,8 +41,8 @@ func getPermission(ctx sdk.Context, path []string, req abci.RequestQuery, keeper
 	return res, nil
 }
 
-// this function returns a list of all the keys for permissions
-func listPermissions(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
+// this function returns a list of all the keys for grants
+func listGrants(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	var grantList types.QueryResGrants
 
 	iterator := keeper.GetGrantIterator(ctx)

@@ -11,7 +11,7 @@
             "mode": "auto",
             "program": "${fileDirname}",
             "env": {},
-            "args": ["q", "permission", "detail", "cosmos1kx5jcq6avnh6d4ru99dla5zqgnk0ct9quvjw9mcosmos1rkkv3pmmdtprkszjzxne2u8rmup4nd785f9l7f" ]
+//            "args": ["q", "permission", "detail", "cosmos1kx5jcq6avnh6d4ru99dla5zqgnk0ct9quvjw9mcosmos1rkkv3pmmdtprkszjzxne2u8rmup4nd785f9l7f" ]
 //            "args": ["keys", "add",  "ds7"  ]
 //            "args": ["q", "permission", "list" ]
 //            "args": ["tx", "permission", "delete", "dc1", "dp1", "location",  "-y", "--from", "ds1"]
@@ -19,6 +19,10 @@
 //            "args": ["tx", "permission", "create", "cosmos1w9uu7t4p273m60z03lw68hc56jj6dxxvla4sxn", "cosmos168t5kr9rdpknzmw9kxspfdxcm26vvneffk28dx", "Read", "location", "1xal", "-y", "--from", "ds1"]
 //            "args": ["tx", "permission", "update", "cosmos1apkf7kaw7tqvknhvfdgdplr78pr3vxaq0rxqwk", 
 //                "cosmos1tc7eh53w2nvv425m2qja30x88krz3cp88jtutj" , "cosmos1s5uv5f5gerwk44rmm4jjxagxn73y2w5pqmd37z", "crud"]
+//            "args": ["q", "grant", "list" ]
+            "args": ["tx", "grant", "request", "cosmos1q8z7u4qz9u9zgxqtx7c4pysqyrgu2g8l4j63k3", "cosmos1aw7scl7x5d0k9v6d7s3jf7p9fgfh7rt77hhnkq", "cosmos1nqr84vgamwuhmhmp42ynxp0qz0ph8de4rdyfre", "12xal", "-y", "--from", "cosmos1nqr84vgamwuhmhmp42ynxp0qz0ph8de4rdyfre"]
+
+
 }
     ]
 }

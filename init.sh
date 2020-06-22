@@ -24,6 +24,8 @@ dalcli keys add dp1 # data processor 1
 dalcli keys add ds2  # data subject 2
 dalcli keys add dc2 # data controller 2
 dalcli keys add dp2 # data processor 2
+dalcli keys add sp1 # service provider 1
+dalcli keys add sp2 # service provider 2
 
 
 # Add both accounts, with coins to the genesis file
@@ -33,6 +35,8 @@ dald add-genesis-account $(dalcli keys show dp1 -a) 1000xal
 dald add-genesis-account $(dalcli keys show ds2 -a) 1000xal
 dald add-genesis-account $(dalcli keys show dc2 -a) 1000xal,100000000stake
 dald add-genesis-account $(dalcli keys show dp2 -a) 1000xal
+dald add-genesis-account $(dalcli keys show sp1 -a) 1000xal
+dald add-genesis-account $(dalcli keys show sp2 -a) 1000xal
 
 
 # let the application know that DC1 willbethe only validator
@@ -62,7 +66,17 @@ dalcli q permission list
 dalcli q permission detail "cosmos1uu6lc2370ztj4d29lw6wcrw20093kuvr8gtyd5cosmos1fk0nlu3ysspx46cy8s98l0e3w9tfssnrmf2ntfcosmos1wukwvah8d9cfkvygyk032rasanfh4xdwhf2wp4"
 
 
+#Create a grant request
+ dalcli tx grant request $(dalcli keys show ds1 -a) $(dalcli keys show dc1 -a)  $(dalcli keys show dp1 -a) 12xal  --from $(dalcli keys show dp1 -a)
 
+#List all grants
+dalcli q grant list
+
+#query that grant
+dalcli q grant detail e0aa9b27290f4c3f97667a27f80a7404
+
+#validate that grant
+dalcli tx grant validate $(dalcli keys show sp1 -a) e0aa9b27290f4c3f97667a27f80a7404 --from $(dalcli keys show sp1 -a)
 
 
 

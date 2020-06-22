@@ -2,7 +2,7 @@ package types
 
 import sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-// GenesisState - all permission state that must be provided at genesis
+// GenesisState - all grant state that must be provided at genesis
 type GenesisState struct {
 	AccessControlList []Grant `json:"access_control_list"`
 }
@@ -19,7 +19,7 @@ func DefaultGenesisState() GenesisState {
 	}
 }
 
-// ValidateGenesis validates the permission genesis parameters
+// ValidateGenesis validates the grant genesis parameters
 func ValidateGenesis(data GenesisState) error {
 	for _, record := range data.AccessControlList {
 		if record.Token != "" {

@@ -5,7 +5,7 @@ import "strings"
 const (
 	// QueryGrantDetail -
 	QueryGrantDetail = "detail"
-	// QueryGrantList - a list of a grant permissions
+	// QueryGrantList - a list of a grants
 	QueryGrantList = "list"
 )
 

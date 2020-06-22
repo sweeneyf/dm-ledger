@@ -40,6 +40,8 @@ type (
 
 	// MsgRequestAccess -
 	MsgRequestAccess = types.MsgRequestAccess
+	// MsgValidateToken -
+	MsgValidateToken = types.MsgValidateToken
 
 	// Grant is the result of the Access Request
 	Grant = types.Grant

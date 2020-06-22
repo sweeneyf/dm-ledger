@@ -65,7 +65,7 @@ func GetCmdListGrants(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			fullQueryRoute := fmt.Sprintf("custom/%s/%s", queryRoute, types.QueryGrantList)
 			res, _, err := cliCtx.QueryWithData(fullQueryRoute, nil)
 			if err != nil {
-				fmt.Printf("could not get query permission list full route is %s - error is %v\n ", fullQueryRoute, err)
+				fmt.Printf("could not get query grant list full route is %s - error is %v\n ", fullQueryRoute, err)
 				return nil
 			}
 

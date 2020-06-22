@@ -8,4 +8,5 @@ import (
 // You can see how they are constructed below:
 var (
 	ErrGrantDoesNotExist = sdkerrors.Register(ModuleName, 1, "grant does not exist")
+	ErrGrantExpired      = sdkerrors.Register(ModuleName, 2, "grant has expired")
 )

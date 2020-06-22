@@ -25,12 +25,6 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 	}
 }
 
-// removePrefixFromKey removes the prefix from the key
-func removePrefixFromKey(key []byte, prefix []byte) (hash []byte) {
-	hash = key[len(prefix):]
-	return hash
-}
-
 // nolint: unparam
 func getPermission(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	value, err := keeper.GetPermission(ctx, path[0])

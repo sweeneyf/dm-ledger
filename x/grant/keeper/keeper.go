@@ -7,9 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/sweeneyf/dm-ledger/x/grant/types"
-	"github.com/sweeneyf/dm-ledger/x/permission"
 )
 
 // Keeper maintains the link to storage and exposes getter/setter methods for the various parts of the state machine
@@ -17,12 +15,12 @@ type Keeper struct {
 	storeKey sdk.StoreKey // Unexposed key to access store from sdk.Context
 
 	cdc              *codec.Codec // The wire codec for binary encoding/decoding.
-	bankKeeper       bank.Keeper
-	PermissionKeeper permission.Keeper
+	bankKeeper       types.BankKeeper
+	PermissionKeeper types.PermissionKeeper
 }
 
 // NewKeeper creates new instances of the access Keeper
-func NewKeeper(cdc *codec.Codec, storeKey sdk.StoreKey, permissionKeeper permission.Keeper, bankKeeper bank.Keeper) Keeper {
+func NewKeeper(cdc *codec.Codec, storeKey sdk.StoreKey, permissionKeeper types.PermissionKeeper, bankKeeper types.BankKeeper) Keeper {
 	return Keeper{
 		cdc:              cdc,
 		storeKey:         storeKey,

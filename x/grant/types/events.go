@@ -1,8 +1,9 @@
 package types
 
-// permission module event types
+// grant module event types
 const (
 	EventTypeRequestAccess = "RequestAccess"
+	EventTypeValidateToken = "ValidateToken"
 
 	AttributeSubject     = "subject"
 	AttributeController  = "controller"
@@ -10,6 +11,7 @@ const (
 	AttributeDataPointer = "dataPointer"
 	AttributeDataHash    = "dataHash"
 	AttributeReward      = "reward"
+	AttributeToken       = "token"
 
 	AttributeValueCategory = ModuleName
 )
